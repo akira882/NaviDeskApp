@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-body: "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans CJK JP", sans-serif;
+  --font-heading: "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans CJK JP", sans-serif;
+}
+
+body {
+  @apply min-h-screen bg-slate-50 bg-page-grid [background-size:24px_24px] text-slate-900;
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+a {
+  @apply text-inherit no-underline;
+}
+
+::selection {
+  @apply bg-teal-100 text-ink;
+}
