@@ -5,9 +5,8 @@ import Link from "next/link";
 import { LayoutDashboard, MessageSquareText, Newspaper, Search, ShieldCheck } from "lucide-react";
 
 import { getRoleLabel } from "@/lib/roles";
-import { roles } from "@/types/domain";
 import { useRole } from "@/components/role-provider";
-import { Select } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const navItems: Array<{ href: Route; label: string; icon: typeof Search }> = [
   { href: "/", label: "ホーム", icon: Search },
@@ -19,7 +18,7 @@ const navItems: Array<{ href: Route; label: string; icon: typeof Search }> = [
 ];
 
 export function SiteHeader() {
-  const { role, setRole } = useRole();
+  const { role } = useRole();
 
   return (
     <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur">
@@ -46,18 +45,8 @@ export function SiteHeader() {
           })}
         </nav>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-slate-500">閲覧ロール</span>
-          <Select
-            value={role}
-            onChange={(event) => setRole(event.target.value as typeof role)}
-            className="w-40"
-          >
-            {roles.map((item) => (
-              <option key={item} value={item}>
-                {getRoleLabel(item)}
-              </option>
-            ))}
-          </Select>
+          <span className="text-sm text-slate-500">セッションロール</span>
+          <Badge className="bg-teal-50">{getRoleLabel(role)}</Badge>
         </div>
       </div>
     </header>

@@ -2,7 +2,17 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
+import { announcements, articles, auditLogs, faqs, quickLinks } from "@/data/mock/seed";
 import { ContentProvider, useContent } from "@/components/content-provider";
+import { createInitialPortalState } from "@/lib/content-helpers";
+
+const initialState = createInitialPortalState({
+  articles,
+  faqs,
+  announcements,
+  quickLinks,
+  auditLogs
+});
 
 function Harness() {
   const content = useContent();
@@ -56,11 +66,10 @@ function Harness() {
 
 describe("ContentProvider", () => {
   it("updates shared content and audit logs for management actions", async () => {
-    window.localStorage.clear();
     const user = userEvent.setup();
 
     render(
-      <ContentProvider>
+      <ContentProvider initialState={initialState}>
         <Harness />
       </ContentProvider>
     );

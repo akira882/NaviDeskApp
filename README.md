@@ -4,6 +4,8 @@ NaviDeskApp is an enterprise internal knowledge operations portal built to reduc
 
 This product is designed as an internal production system, not a demo artifact. The primary concerns are information architecture, searchability, controlled updates, role-based access, auditability, and a safe path to future AI integration.
 
+For confidential internal documents, the design assumption is explicit: authorization must be enforced server-side, secrets must remain server-side, and unauthorized content must not be shipped to the browser.
+
 ## Product purpose
 
 Organizations accumulate operational knowledge across HR, IT, General Affairs, workflows, work rules, and benefits. In practice, that knowledge becomes fragmented across portals, spreadsheets, documents, and team memory. NaviDeskApp consolidates that internal knowledge into one governed entry point.
@@ -85,6 +87,7 @@ Supporting documents:
 
 - [Architecture](./docs/ARCHITECTURE.md)
 - [Operations](./docs/OPERATIONS.md)
+- [Security](./docs/SECURITY.md)
 
 ## AI integration strategy
 
@@ -106,13 +109,14 @@ Reference environment file:
 
 ## Current runtime model
 
-This version uses a shared client-side content store with local persistence so administrative actions can be validated end-to-end in a single application instance.
+This version uses a shared client-side content store for interactive management behavior, but the initial content state is prepared server-side according to the authenticated session role.
 
 That means the current version already supports:
 
 - create, edit, delete, and publish-toggle flows
 - immediate propagation from admin screens to user-facing screens
 - audit log updates for managed content mutations
+- server-side role-based initial content filtering
 
 For production deployment, the next step is to replace this client-side store with server-side persistence while preserving the same domain boundaries.
 

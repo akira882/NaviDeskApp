@@ -1,11 +1,14 @@
 import { z } from "zod";
+import { roles } from "@/types/domain";
 
 const envSchema = z.object({
   GEMINI_API_KEY: z.string().optional(),
-  NAVIDESK_AI_PROVIDER: z.enum(["mock", "gemini"]).optional().default("mock")
+  NAVIDESK_AI_PROVIDER: z.enum(["mock", "gemini"]).optional().default("mock"),
+  NAVIDESK_SESSION_ROLE: z.enum(roles).optional().default("employee")
 });
 
 export const env = envSchema.parse({
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-  NAVIDESK_AI_PROVIDER: process.env.NAVIDESK_AI_PROVIDER
+  NAVIDESK_AI_PROVIDER: process.env.NAVIDESK_AI_PROVIDER,
+  NAVIDESK_SESSION_ROLE: process.env.NAVIDESK_SESSION_ROLE
 });

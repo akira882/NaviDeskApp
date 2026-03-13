@@ -1,16 +1,9 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
-import {
-  announcements,
-  articles,
-  auditLogs,
-  faqs,
-  quickLinks,
-  users
-} from "@/data/mock/seed";
-import { createInitialPortalState, buildAuditLog, resolveActorId } from "@/lib/content-helpers";
+import { users } from "@/data/mock/seed";
+import { buildAuditLog, resolveActorId } from "@/lib/content-helpers";
 import type {
   Announcement,
   Article,
@@ -19,8 +12,6 @@ import type {
   QuickLink,
   Role
 } from "@/types/domain";
-
-const STORAGE_KEY = "navidesk-content-state";
 
 type ContentContextValue = PortalContentState & {
   addArticle: (input: Omit<Article, "id" | "updatedAt" | "updatedBy">, role: Role) => void;
@@ -51,14 +42,6 @@ type ContentContextValue = PortalContentState & {
   deleteQuickLink: (id: string, role: Role) => void;
 };
 
-const initialState = createInitialPortalState({
-  articles,
-  faqs,
-  announcements,
-  quickLinks,
-  auditLogs
-});
-
 const ContentContext = createContext<ContentContextValue | null>(null);
 
 function appendLog(state: PortalContentState, log: PortalContentState["auditLogs"][number]) {
@@ -68,34 +51,14 @@ function appendLog(state: PortalContentState, log: PortalContentState["auditLogs
   };
 }
 
-export function ContentProvider({ children }: { children: React.ReactNode }) {
+export function ContentProvider({
+  children,
+  initialState
+}: {
+  children: React.ReactNode;
+  initialState: PortalContentState;
+}) {
   const [state, setState] = useState<PortalContentState>(initialState);
-  const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!saved) {
-      setHasLoadedStorage(true);
-      return;
-    }
-
-    try {
-      setState(JSON.parse(saved) as PortalContentState);
-    } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
-    } finally {
-      setHasLoadedStorage(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!hasLoadedStorage) {
-      return;
-    }
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [hasLoadedStorage, state]);
 
   const value = useMemo<ContentContextValue>(() => {
     function actorId(role: Role) {
