@@ -7,7 +7,7 @@ export default function AdminPage() {
   return (
     <AppShell
       title="管理画面"
-      description="記事、FAQ、お知らせ、クイックリンクの作成・編集・削除・公開切替を一画面で扱います。MVP では共有ストアを使い、将来 DB へ差し替えやすい構成にしています。"
+      description="記事、FAQ、お知らせ、クイックリンクの作成・編集・削除・公開切替を統制し、運用変更を監査可能な形で反映します。"
     >
       <AdminGate>
         <AdminDashboard categories={categoryRepository.list()} />

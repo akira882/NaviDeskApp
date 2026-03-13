@@ -5,8 +5,8 @@ import { ContentProvider } from "@/components/content-provider";
 import { RoleProvider } from "@/components/role-provider";
 
 export const metadata: Metadata = {
-  title: "NaviDesk",
-  description: "社内向け AI ポータル MVP"
+  title: "NaviDeskApp",
+  description: "Enterprise knowledge operations portal"
 };
 
 export default function RootLayout({

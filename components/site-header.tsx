@@ -26,9 +26,9 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <Link href="/" className="text-xl font-semibold tracking-tight text-ink">
-            NaviDesk
+            NaviDeskApp
           </Link>
-          <p className="text-sm text-slate-500">社内情報に最短で到達するための AI 補助付きポータル</p>
+          <p className="text-sm text-slate-500">Enterprise knowledge operations portal for internal teams</p>
         </div>
         <nav className="flex flex-wrap items-center gap-2">
           {navItems.map((item) => {
