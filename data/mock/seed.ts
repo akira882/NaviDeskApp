@@ -129,6 +129,176 @@ export const articles: Article[] = [
     relatedArticleIds: ["art-paid-leave", "art-attendance-fix"],
     updatedAt: "2026-02-22T14:00:00+09:00",
     updatedBy: "u-edt"
+  },
+  // 人事カテゴリ追加 (+2件)
+  {
+    id: "art-onboarding",
+    title: "入社手続きの流れ",
+    slug: "employee-onboarding-process",
+    categoryId: "cat-hr",
+    summary: "新入社員の入社手続き、必要書類、初日の流れを説明しています。",
+    content:
+      "1. 入社日の2週間前までに必要書類を人事へ提出してください。\n2. 必要書類: 雇用契約書（署名済み）、身分証明書コピー、マイナンバー通知書コピー、銀行口座情報。\n3. 入社日当日は9:00に受付へお越しください。\n4. 初日は人事オリエンテーション、PC・アカウント発行、部門紹介を行います。\n5. 社会保険・雇用保険の加入手続きは人事側で進めます。\n6. 不明点は人事担当までお問い合わせください。",
+    tags: ["入社", "手続き", "新入社員"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: ["art-paid-leave"],
+    updatedAt: "2026-01-15T10:00:00+09:00",
+    updatedBy: "u-edt"
+  },
+  {
+    id: "art-resignation",
+    title: "退職手続きの案内",
+    slug: "resignation-process",
+    categoryId: "cat-hr",
+    summary: "退職時の手続き、返却物、最終出社日までの流れを整理しています。",
+    content:
+      "1. 退職希望日の1ヶ月前までに直属上長へ退職意向を伝えてください。\n2. 人事へ退職届を提出します。\n3. 返却物: 社員証、PC、携帯電話、鍵、社内資料などを人事へ返却します。\n4. 最終勤務日までに有休消化計画を上長と調整してください。\n5. 退職日翌月に離職票と源泉徴収票を郵送します。\n6. 社会保険の資格喪失手続きは人事側で行います。",
+    tags: ["退職", "手続き", "人事"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: [],
+    updatedAt: "2026-01-20T11:30:00+09:00",
+    updatedBy: "u-edt"
+  },
+  // 総務カテゴリ追加 (+3件)
+  {
+    id: "art-meeting-room",
+    title: "会議室予約ルール",
+    slug: "meeting-room-reservation",
+    categoryId: "cat-ga",
+    summary: "会議室予約システムの利用方法、予約ルール、キャンセル手順を説明しています。",
+    content:
+      "1. 社内ポータルから会議室予約システムにアクセスします。\n2. 利用日時、人数、必要設備を選択して予約します。\n3. 予約は利用開始時刻の30分前まで可能です。\n4. キャンセルは利用開始2時間前まで受付可能です。\n5. 無断キャンセルが2回続くと予約権限が一時停止されます。\n6. 利用後は机上を整理し、ホワイトボードを消してください。",
+    tags: ["会議室", "予約", "総務"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: [],
+    updatedAt: "2026-02-05T09:00:00+09:00",
+    updatedBy: "u-edt"
+  },
+  {
+    id: "art-supplies",
+    title: "備品購入申請の流れ",
+    slug: "office-supplies-request",
+    categoryId: "cat-ga",
+    summary: "文房具、消耗品、オフィス備品の購入申請手順を整理しています。",
+    content:
+      "1. 備品申請システムにログインします。\n2. 必要備品の品名、数量、用途を入力します。\n3. 5,000円未満の消耗品は総務承認のみで発注します。\n4. 5,000円以上の備品は上長承認後、総務へ回付されます。\n5. 発注後、納品は原則1週間以内に総務フロアで受け取り可能です。\n6. 緊急の場合は総務へ直接電話連絡してください。",
+    tags: ["備品", "申請", "総務"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: [],
+    updatedAt: "2026-02-08T14:00:00+09:00",
+    updatedBy: "u-edt"
+  },
+  {
+    id: "art-visitor",
+    title: "来客対応と受付手順",
+    slug: "visitor-reception-procedure",
+    categoryId: "cat-ga",
+    summary: "来客時の受付手順、会議室案内、セキュリティ対応を説明しています。",
+    content:
+      "1. 来客予定がある場合は事前に受付へ連絡してください。\n2. 受付で来客者名、訪問先、訪問時刻を記入します。\n3. 来客者へ入館証を渡し、会議室まで案内します。\n4. 会議終了後は入館証を回収し、受付へ返却してください。\n5. 外部業者の場合はセキュリティチェックリストに従い、持ち込み物を確認します。\n6. 不審者を発見した場合は直ちに受付または総務へ連絡してください。",
+    tags: ["来客", "受付", "セキュリティ"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: [],
+    updatedAt: "2026-02-12T10:30:00+09:00",
+    updatedBy: "u-edt"
+  },
+  // 申請・手続きカテゴリ追加 (+2件)
+  {
+    id: "art-expense",
+    title: "経費精算の申請方法",
+    slug: "expense-reimbursement",
+    categoryId: "cat-app",
+    summary: "交通費、会議費、交際費などの経費精算申請手順を説明しています。",
+    content:
+      "1. 経費精算システムにログインします。\n2. 経費種別（交通費、会議費、交際費など）を選択します。\n3. 利用日、金額、用途、参加者を入力します。\n4. 領収書をスキャンまたは写真で添付します。\n5. 申請後、上長承認と経理承認を経て振込処理されます。\n6. 申請は利用月の翌月末までに完了してください。",
+    tags: ["経費", "精算", "申請"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: [],
+    updatedAt: "2026-02-18T13:00:00+09:00",
+    updatedBy: "u-edt"
+  },
+  {
+    id: "art-business-trip",
+    title: "出張申請の手順",
+    slug: "business-trip-request",
+    categoryId: "cat-app",
+    summary: "国内出張・海外出張の申請、承認、経費精算までの流れを整理しています。",
+    content:
+      "1. 出張申請システムから新規申請を作成します。\n2. 出張先、期間、目的、訪問先、宿泊先を入力します。\n3. 概算費用（交通費、宿泊費、日当）を記載します。\n4. 上長承認後、経理へ回付されます。\n5. 出張後1週間以内に実費精算を完了してください。\n6. 海外出張の場合は出発2週間前までに申請が必要です。",
+    tags: ["出張", "申請", "経費"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: ["art-expense"],
+    updatedAt: "2026-02-20T15:30:00+09:00",
+    updatedBy: "u-edt"
+  },
+  // 就業ルールカテゴリ追加 (+2件)
+  {
+    id: "art-remote-work",
+    title: "在宅勤務時の就業ルール",
+    slug: "remote-work-rules",
+    categoryId: "cat-work",
+    summary: "在宅勤務時の勤務開始・終了報告、勤怠管理、セキュリティルールを説明しています。",
+    content:
+      "1. 在宅勤務日は事前に上長へ申請し、勤怠システムで「在宅勤務」を選択します。\n2. 勤務開始時にチャットで始業報告を行ってください。\n3. 勤務終了時も同様に終業報告を行います。\n4. 休憩時間は通常勤務と同様に1時間取得してください。\n5. VPN接続と社内システムへのアクセスは必須です。\n6. 社内情報の取り扱いは情報セキュリティポリシーに従ってください。",
+    tags: ["在宅勤務", "就業ルール", "勤怠"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: ["art-vpn", "art-attendance-fix"],
+    updatedAt: "2026-01-25T09:30:00+09:00",
+    updatedBy: "u-edt"
+  },
+  {
+    id: "art-overtime",
+    title: "残業申請のルール",
+    slug: "overtime-request-rules",
+    categoryId: "cat-work",
+    summary: "残業申請の事前承認、上限時間、深夜勤務時の注意事項を整理しています。",
+    content:
+      "1. 残業は原則として事前申請が必要です。\n2. 勤怠システムから残業予定時間と理由を入力します。\n3. 上長承認後、実際の残業が可能になります。\n4. 月間残業時間の上限は45時間です。\n5. 22時以降の深夜勤務は事前に部門長承認が必要です。\n6. 健康管理の観点から、連続勤務や過重労働を避けてください。",
+    tags: ["残業", "申請", "就業ルール"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: ["art-attendance-fix"],
+    updatedAt: "2026-02-03T10:00:00+09:00",
+    updatedBy: "u-edt"
+  },
+  // 福利厚生カテゴリ追加 (+2件)
+  {
+    id: "art-health-checkup",
+    title: "健康診断受診の案内",
+    slug: "health-checkup-guide",
+    categoryId: "cat-benefit",
+    summary: "定期健康診断の予約方法、受診日程、結果確認までの流れを説明しています。",
+    content:
+      "1. 毎年4月〜6月に定期健康診断を実施します。\n2. 受診希望日を福利厚生ポータルから予約します。\n3. 受診日当日は指定医療機関へ直接お越しください。\n4. 受診時間は勤務時間として扱われます。\n5. 健診結果は受診後1ヶ月以内に福利厚生ポータルで確認できます。\n6. 再検査が必要な場合は産業医面談を受けてください。",
+    tags: ["健康診断", "福利厚生", "産業医"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: ["art-benefits"],
+    updatedAt: "2026-02-25T14:30:00+09:00",
+    updatedBy: "u-edt"
+  },
+  {
+    id: "art-condolence",
+    title: "慶弔見舞金申請の手順",
+    slug: "condolence-allowance-request",
+    categoryId: "cat-benefit",
+    summary: "結婚祝金、出産祝金、弔慰金などの慶弔見舞金制度と申請方法を整理しています。",
+    content:
+      "1. 慶弔事由が発生した場合、人事へ連絡してください。\n2. 福利厚生ポータルから該当する慶弔区分を選択します。\n3. 必要書類（結婚証明書、出生証明書、会葬礼状など）を添付します。\n4. 申請後、人事承認を経て給与と合算で支給されます。\n5. 申請は事由発生日から3ヶ月以内に完了してください。\n6. 支給金額は就業規則の慶弔規程に準じます。",
+    tags: ["慶弔", "見舞金", "福利厚生"],
+    status: "published",
+    visibilityRole: "employee",
+    relatedArticleIds: [],
+    updatedAt: "2026-02-28T16:00:00+09:00",
+    updatedBy: "u-edt"
   }
 ];
 

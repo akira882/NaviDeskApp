@@ -1,181 +1,254 @@
-# NaviDeskApp
+# NaviDesk
 
-NaviDeskApp is an enterprise internal knowledge operations portal built to reduce search friction, repeated support inquiries, and operational ambiguity across corporate functions.
+NaviDeskは、社内情報の探索時間と問い合わせ負荷を削減するために設計された、社内向けAIポータルのMVPです。
 
-This product is designed as an internal production system, not a demo artifact. The primary concerns are information architecture, searchability, controlled updates, role-based access, auditability, and a safe path to future AI integration.
+## プロダクトの目的
 
-For confidential internal documents, the design assumption is explicit: authorization must be enforced server-side, secrets must remain server-side, and unauthorized content must not be shipped to the browser.
+社内では、人事、情シス、総務、申請手続き、就業ルール、福利厚生など、さまざまな業務知識が蓄積されていますが、それらはポータル、スプレッドシート、ドキュメント、チームの記憶などに分散してしまいがちです。NaviDeskは、こうした社内ナレッジを一元管理し、統制されたエントリーポイントとして機能します。
 
-## Product purpose
+### 解決する課題
 
-Organizations accumulate operational knowledge across HR, IT, General Affairs, workflows, work rules, and benefits. In practice, that knowledge becomes fragmented across portals, spreadsheets, documents, and team memory. NaviDeskApp consolidates that internal knowledge into one governed entry point.
+- **社員が正しい社内手順を素早く見つけられない**
+- **サポートチームへ同じ質問が繰り返し寄せられる**
+- **公開済みのガイドやFAQが存在するが発見しにくい**
+- **ポータルの保守と運用責任が属人化している**
 
-The product is intended to solve four business problems:
+## プロダクトスコープ
 
-- employees cannot quickly find the correct internal procedure
-- support teams receive the same questions repeatedly
-- published guides and FAQs exist but are difficult to discover
-- portal maintenance and ownership become inconsistent over time
+現在実装されている機能:
 
-## Product scope
+- **社内記事とFAQの横断検索**
+- **業務ドメイン別のカテゴリ閲覧**
+- **記事詳細ページ（関連情報、更新履歴の表示）**
+- **FAQ検索（キーワード・カテゴリ絞り込み）**
+- **AI案内機能（社内コンテンツに基づく回答生成）**
+- **管理画面（記事、FAQ、お知らせ、クイックリンクの管理）**
+- **監査ログ画面（運用変更の可視化）**
+- **ロール別表示制御（employee、manager、editor、admin）**
 
-Current product capabilities:
+## 設計思想
 
-- global search across internal articles and FAQs
-- category-based browsing for business domains
-- article detail pages with related information and update traceability
-- FAQ search with keyword and category filters
-- AI-assisted guidance grounded in internal content only
-- administrative management for articles, FAQs, announcements, and quick links
-- audit log visibility for operational changes
-- role-aware visibility across employee, manager, editor, and admin
+### 1. 社内コンテンツが唯一の情報源
 
-## Enterprise design principles
+AI機能は、制度や手順を勝手に創作しません。まず社内コンテンツを検索し、根拠がある場合のみ回答を返します。根拠が弱い場合は、通常検索結果にフォールバックします。
 
-### 1. Internal content is the source of truth
+### 2. 運用変更は統制されるべき
 
-The AI layer does not invent policy, process, or procedural steps. It first searches internal content and only returns guidance when grounded evidence exists. If evidence is weak, the system falls back to normal search results.
+コンテンツ管理は運用上の関心事として扱います。管理画面での変更は、共有コンテンツレイヤーを通じてポータル全体に反映され、監査ログにも記録されます。
 
-### 2. Operational changes must be controlled
+### 3. 認可は明示的であるべき
 
-Content management is treated as an operational concern, not a UI concern. Changes to managed content flow through the shared content layer and are reflected across the portal together with audit log updates.
+コードベースでは、可視性と管理権限を明示的にモデル化しています:
 
-### 3. Authorization must be explicit
+- `employee`: 一般社員向けコンテンツの閲覧
+- `manager`: 一般社員向け + 管理職向けコンテンツの閲覧
+- `editor`: コンテンツ管理権限
+- `admin`: 全権限 + 監査ログ閲覧
 
-The codebase models visibility and management responsibilities directly:
+### 4. 外部AI統合は交換可能であるべき
 
-- `employee`: read access to employee-visible content
-- `manager`: employee content plus manager-specific content
-- `editor`: content management authority
-- `admin`: full authority plus audit log access
+AI案内機能は、プロバイダーサービスの背後に抽象化されています。現在のモック実装は、後日サーバーサイドでGemini統合に置き換え可能です。
 
-### 4. External AI integration must be replaceable
+## アーキテクチャ概要
 
-The AI guide is abstracted behind a provider service so the current grounded mock behavior can later be replaced by a server-side Gemini integration without rewriting the product UI.
+### ディレクトリ構成
 
-## Architecture summary
-
-Directory layout:
-
-```text
-app/
-components/
-data/
-docs/
-lib/
-types/
+```
+app/              画面ルートとコンポーネント
+components/       UIコンポーネント
+data/             モックデータとリポジトリ
+lib/              ビジネスロジックとヘルパー
+types/            型定義
 ```
 
-Key implementation boundaries:
+### 主要な実装境界
 
-- `types/domain.ts`
-  domain model definitions
-- `data/mock/seed.ts`
-  seed content and reference data
-- `data/repositories/content-repository.ts`
-  master-data access and read helpers
-- `components/content-provider.tsx`
-  shared operational content state for the current version
-- `lib/content-helpers.ts`
-  business logic for visibility, search, and audit composition
-- `lib/ai/guide-service.ts`
-  AI provider boundary
-- `lib/env.ts`
-  server-side environment contract for future AI integration
+- `types/domain.ts` - ドメインモデル定義
+- `data/mock/seed.ts` - シードデータ
+- `data/repositories/content-repository.ts` - データアクセス層
+- `app/components/content-provider.tsx` - 共有コンテンツ状態管理
+- `lib/content-helpers.ts` - 可視性制御、検索、監査ログのビジネスロジック
+- `lib/ai/guide-service.ts` - AIプロバイダー抽象化境界
+- `lib/env.ts` - サーバーサイド環境変数定義
 
-Supporting documents:
+## AI統合戦略
 
-- [Architecture](./docs/ARCHITECTURE.md)
-- [Operations](./docs/OPERATIONS.md)
-- [Security](./docs/SECURITY.md)
+現在のプロダクトは、社内コンテンツに基づくモックプロバイダーを使用しています。これは意図的な設計です。
 
-## AI integration strategy
+### 本番環境への移行パス
 
-The current product uses a grounded mock provider. This is intentional.
+1. まず社内記事とFAQから根拠を検索
+2. 候補記事とFAQをランク付け
+3. Geminiをサーバーサイドでのみ呼び出し（根拠取得後）
+4. 回答と引用、またはフォールバック候補を返す
+5. AI固有の運用テレメトリーをコンテンツ監査ログと分離して記録
 
-Planned production path:
+`GEMINI_API_KEY`は、ブラウザ側では使用しません。本番統合では、APIキーをサーバーサイドのみで管理します。
 
-1. retrieve internal evidence first
-2. rank candidate articles and FAQs
-3. call Gemini server-side only after evidence retrieval
-4. return answer plus citations or fallback suggestions
-5. record AI-specific operational telemetry separately from content audit logs
+## 現在のランタイムモデル
 
-`GEMINI_API_KEY` is intentionally not used in the browser. A future production integration should keep the key server-side only.
+現在のバージョンは、インタラクティブな管理動作のためにクライアントサイドの共有コンテンツストアを使用していますが、初期コンテンツ状態は認証されたセッションロールに基づいてサーバーサイドで準備されます。
 
-Reference environment file:
+つまり、現在のバージョンは既に以下をサポートしています:
 
-- [.env.example](./.env.example)
+- 作成、編集、削除、公開切替フロー
+- 管理画面からユーザー向け画面への即時反映
+- 管理コンテンツ変更の監査ログ更新
+- サーバーサイドでのロールベース初期コンテンツフィルタリング
 
-## Current runtime model
+本番デプロイの次のステップは、同じドメイン境界を保ちながら、このクライアントサイドストアをサーバーサイド永続化に置き換えることです。
 
-This version uses a shared client-side content store for interactive management behavior, but the initial content state is prepared server-side according to the authenticated session role.
-
-That means the current version already supports:
-
-- create, edit, delete, and publish-toggle flows
-- immediate propagation from admin screens to user-facing screens
-- audit log updates for managed content mutations
-- server-side role-based initial content filtering
-
-For production deployment, the next step is to replace this client-side store with server-side persistence while preserving the same domain boundaries.
-
-## Setup
+## セットアップ
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Quality gates
+開発サーバーが起動したら、ブラウザで `http://localhost:3000` にアクセスしてください。
+
+## 品質ゲート
 
 ```bash
-npm run lint
-npm run test
-npm run build
+npm run lint     # ESLint実行
+npm run test     # テスト実行
+npm run build    # プロダクションビルド
 ```
 
-Automated coverage currently validates:
+自動テストは以下をカバーしています:
 
-- search behavior across role-aware content
-- grounded AI fallback behavior
-- shared content mutation behavior
-- audit log propagation for administrative actions
+- ロール別コンテンツの検索動作
+- AI案内のフォールバック動作
+- 共有コンテンツの変更動作
+- 管理操作の監査ログ記録
 
-## Production migration path
+## 本番環境への移行パス
 
-### Near term
+### 短期
 
-- replace local persistence with database-backed repositories
-- move all content mutations to authenticated server-side endpoints
-- resolve role membership from SSO and identity claims
-- add revision history and rollback support
+- ローカル永続化をデータベースバックエンドリポジトリに置き換え
+- 全コンテンツ変更を認証済みサーバーサイドエンドポイントへ移行
+- SSOとIDクレームからロールメンバーシップを解決
+- リビジョン履歴とロールバックサポートを追加
 
-### Medium term
+### 中期
 
-- add approval workflows for sensitive content changes
-- introduce full-text indexing and ranking controls
-- separate audit streams for content, authentication, and AI actions
-- add structured observability for operational support
+- 機密コンテンツ変更の承認ワークフローを追加
+- 全文インデックスとランキング制御を導入
+- コンテンツ、認証、AIアクションの監査ストリームを分離
+- 運用サポートのための構造化オブザーバビリティを追加
 
-### AI phase
+### AI統合フェーズ
 
-- implement server-side Gemini provider
-- enforce evidence thresholds before answer generation
-- add confidence-aware fallback rules
-- apply request rate limits and secret management policies
+- サーバーサイドGeminiプロバイダーを実装
+- 回答生成前の根拠閾値を強制
+- 信頼度に基づくフォールバックルールを追加
+- リクエストレート制限とシークレット管理ポリシーを適用
 
-## Business-oriented sample content
+## ダミーコンテンツ
 
-Seed content includes realistic internal operations topics:
+シードデータには、実務でありそうな社内業務トピックを18件含んでいます:
 
-- paid leave request process
-- attendance correction process
-- VPN setup guide
-- PC password reset procedure
-- benefits usage guidance
-- internal help desk contact process
+### 人事（3件）
+- 有休申請の手順
+- 入社手続きの流れ
+- 退職手続きの案内
 
-## Status
+### 情シス（3件）
+- VPN設定ガイド
+- PCパスワード初期化手順
+- 社内ヘルプデスクへの問い合わせ方法
 
-The current codebase is suitable as an enterprise-oriented internal product foundation. It already demonstrates governed content access, operational management, auditability, and a safe AI integration boundary. The remaining work for full production readiness is persistence, authentication, and server-side AI execution.
+### 総務（3件）
+- 会議室予約ルール
+- 備品購入申請の流れ
+- 来客対応と受付手順
+
+### 申請・手続き（3件）
+- 管理職向け 申請承認の確認ポイント
+- 経費精算の申請方法
+- 出張申請の手順
+
+### 就業ルール（3件）
+- 勤怠修正申請の方法
+- 在宅勤務時の就業ルール
+- 残業申請のルール
+
+### 福利厚生（3件）
+- 福利厚生サービスの利用方法
+- 健康診断受診の案内
+- 慶弔見舞金申請の手順
+
+## 技術スタック
+
+### Next.js App Router
+
+**選定理由:**
+- サーバーサイドレンダリング（SSR）とスタティックサイト生成（SSG）の両方をサポートし、社内ポータルに求められる高速な初期表示とSEOを実現
+- App Routerにより、サーバーコンポーネントとクライアントコンポーネントを明示的に分離でき、ロールベースの初期コンテンツフィルタリングをサーバー側で安全に実行可能
+- ファイルベースルーティングにより、カテゴリ別ページや記事詳細ページの実装が直感的
+- 将来的なAPI Routesの追加により、フロントエンドとバックエンドを同一リポジトリで管理できる拡張性
+- Vercelへのデプロイが容易で、社内環境への展開もスムーズ
+
+### TypeScript
+
+**選定理由:**
+- 型安全性により、ドメインモデル（Article、FAQ、User、Roleなど）の整合性を開発時に保証
+- 複数人での保守を前提とした社内プロダクトでは、コードの可読性と保守性が最優先。型定義により意図が明確になり、リファクタリングも安全
+- Zodと組み合わせることで、フォームバリデーションとTypeScript型定義を一元管理
+- IDEの補完機能により、開発効率が向上し、運用フェーズでの機能追加コストを削減
+- 将来的にDB永続化への移行やAI統合を進める際も、型の恩恵により安全にリファクタリング可能
+
+### Tailwind CSS
+
+**選定理由:**
+- ユーティリティファーストのアプローチにより、カスタムCSSの肥大化を防ぎ、保守コストを削減
+- デザインシステムの一貫性を保ちやすく、社内ポータルに求められる「落ち着いた業務用UI」を統一的に実装
+- レスポンシブ対応が容易で、PC中心の社内ポータルでもタブレット対応を低コストで実現
+- ビルド時に未使用のスタイルを自動削除（PurgeCSS）するため、プロダクションバンドルサイズを最小化
+- shadcn/uiとの親和性が高く、コンポーネントライブラリとの統合がスムーズ
+
+### shadcn/ui
+
+**選定理由:**
+- コピー&ペースト型のコンポーネントライブラリのため、外部依存を最小限に抑えつつ、プロジェクト固有のカスタマイズが容易
+- Radix UIベースで、アクセシビリティ（ARIA属性、キーボード操作）が標準で担保され、社内ポータルとしての品質基準を満たす
+- 必要なコンポーネント（Button、Card、Table、Select、Inputなど）のみを選択的に導入でき、バンドルサイズを最適化
+- Tailwind CSSと完全統合されており、デザインのカスタマイズが直感的
+- npmパッケージとしての依存ではなく、ソースコードとして管理されるため、将来的な保守性が高い
+
+### React Hook Form
+
+**選定理由:**
+- 管理画面での記事・FAQ・お知らせの作成・編集フォームが多く、再レンダリングを最小限に抑えた軽量なフォーム管理が必要
+- 非制御コンポーネントベースのため、大量の入力フィールドを持つ管理画面でもパフォーマンスが安定
+- Zodとの統合（@hookform/resolvers）により、バリデーションロジックをスキーマとして一元管理でき、保守性が向上
+- TypeScriptとの親和性が高く、フォームの型安全性を担保
+- エラーハンドリングとバリデーションメッセージの表示が容易で、ユーザー体験を向上
+
+### Zod
+
+**選定理由:**
+- TypeScriptファーストのバリデーションライブラリであり、スキーマ定義から型推論が可能（lib/schemas.ts）
+- フォーム入力のバリデーションとドメインモデルの型定義を同一のスキーマから生成でき、重複を排除
+- ランタイムバリデーションにより、将来的にAPIエンドポイントからのデータ受信時も安全性を担保
+- エラーメッセージのカスタマイズが容易で、日本語でのユーザー向けエラー表示が実装しやすい
+- Next.jsの環境変数バリデーション（lib/env.ts）にも活用でき、設定ミスによる本番障害を防止
+
+---
+
+### 技術選定の総括
+
+これらの技術選定は、以下の3つの優先順位に基づいています:
+
+1. **保守性**: 複数人での長期運用を前提とし、型安全性とコードの可読性を最優先
+2. **拡張性**: 将来的なDB永続化、認証統合、AI機能の本番化を見据えた境界設計
+3. **パフォーマンス**: 社内ポータルとして求められる高速な初期表示と軽量な実装
+
+## ステータス
+
+現在のコードベースは、社内プロダクトの基盤として適しています。統制されたコンテンツアクセス、運用管理、監査可能性、安全なAI統合境界を既に実証しています。本番環境への完全な移行には、永続化、認証、サーバーサイドAI実行が残っています。
+
+## ライセンス
+
+このプロジェクトはポートフォリオ用のサンプル実装です。
