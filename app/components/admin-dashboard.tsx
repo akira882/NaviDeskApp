@@ -519,7 +519,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
 
               <ResourceTable
                 columns={["表示名", "カテゴリ", "URL", "並び順", "操作"]}
-                rows={sortedQuickLinks.map((quickLink) => (
+                rows={sortedQuickLinks.map((quickLink: QuickLink) => (
                   <tr key={quickLink.id}>
                     <Td>{quickLink.label}</Td>
                     <Td>{categoryNameMap.get(quickLink.categoryId)}</Td>
