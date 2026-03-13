@@ -5,6 +5,7 @@ import { Table, Td, Th } from "@/components/ui/table";
 import { useContent } from "@/components/content-provider";
 import { userRepository } from "@/data/repositories/content-repository";
 import { formatDate } from "@/lib/utils";
+import type { AuditLog } from "@/types/domain";
 
 export function AuditLogTable() {
   const { auditLogs } = useContent();
@@ -22,7 +23,7 @@ export function AuditLogTable() {
         </tr>
       </thead>
       <tbody>
-        {auditLogs.map((log) => (
+        {auditLogs.map((log: AuditLog) => (
           <tr key={log.id}>
             <Td>{formatDate(log.timestamp)}</Td>
             <Td>{users.find((user) => user.id === log.actorId)?.name ?? "不明"}</Td>

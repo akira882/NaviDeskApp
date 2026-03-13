@@ -9,8 +9,8 @@ import { useRole } from "@/components/role-provider";
 import { Badge } from "@/components/ui/badge";
 
 const navItems: Array<{ href: Route; label: string; icon: typeof Search }> = [
-  { href: "/ai-guide", label: "AI案内", icon: Search },
   { href: "/", label: "ホーム", icon: Search },
+  { href: "/ai-guide", label: "AI案内", icon: Search },
   { href: "/categories", label: "カテゴリ", icon: LayoutDashboard },
   { href: "/faq", label: "FAQ検索", icon: MessageSquareText },
   { href: "/announcements", label: "お知らせ", icon: Newspaper },

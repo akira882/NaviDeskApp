@@ -32,7 +32,7 @@ export function FAQSearchClient({
       <Card>
         <CardContent className="grid gap-4 md:grid-cols-[1.6fr_0.6fr]">
           <SearchBar value={query} onChange={setQuery} placeholder="質問文、キーワード、タグで検索" />
-          <Select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}>
+          <Select value={categoryId} onChange={(event: React.ChangeEvent<HTMLSelectElement>) => setCategoryId(event.target.value)}>
             <option value="">すべてのカテゴリ</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>

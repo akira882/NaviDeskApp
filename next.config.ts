@@ -3,9 +3,6 @@ import path from "node:path";
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
-  eslint: {
-    ignoreDuringBuilds: true
-  },
   outputFileTracingRoot: path.join(__dirname),
   async headers() {
     return [

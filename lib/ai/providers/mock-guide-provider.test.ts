@@ -40,6 +40,8 @@ describe("mockGuideProvider", () => {
     });
 
     expect(result.mode).toBe("fallback");
-    expect(result.message).toContain("根拠");
+    if (result.mode === "fallback") {
+      expect(result.message).toContain("根拠");
+    }
   });
 });

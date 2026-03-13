@@ -24,7 +24,7 @@ import {
   type QuickLinkFormValues
 } from "@/lib/schemas";
 import { formatDate, splitTags } from "@/lib/utils";
-import type { Category, Role } from "@/types/domain";
+import type { Article, Announcement, Category, FAQ, QuickLink, Role } from "@/types/domain";
 
 type ResourceType = "article" | "faq" | "announcement" | "quick-link";
 
@@ -101,7 +101,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                 className="space-y-3"
                 onSubmit={articleForm.handleSubmit((values) => {
                   const currentArticle = editingArticleId
-                    ? content.articles.find((article) => article.id === editingArticleId)
+                    ? content.articles.find((article: Article) => article.id === editingArticleId)
                     : null;
                   const payload = {
                     title: values.title,
@@ -182,7 +182,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
 
               <ResourceTable
                 columns={["タイトル", "カテゴリ", "公開", "閲覧ロール", "更新日", "操作"]}
-                rows={content.articles.map((article) => (
+                rows={content.articles.map((article: Article) => (
                   <tr key={article.id}>
                     <Td>{article.title}</Td>
                     <Td>{categoryNameMap.get(article.categoryId)}</Td>
@@ -308,7 +308,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
 
               <ResourceTable
                 columns={["質問", "カテゴリ", "公開", "閲覧ロール", "更新日", "操作"]}
-                rows={content.faqs.map((faq) => (
+                rows={content.faqs.map((faq: FAQ) => (
                   <tr key={faq.id}>
                     <Td>{faq.question}</Td>
                     <Td>{categoryNameMap.get(faq.categoryId)}</Td>
@@ -410,7 +410,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
 
               <ResourceTable
                 columns={["タイトル", "公開", "公開日", "更新日", "操作"]}
-                rows={content.announcements.map((announcement) => (
+                rows={content.announcements.map((announcement: Announcement) => (
                   <tr key={announcement.id}>
                     <Td>{announcement.title}</Td>
                     <Td><Badge>{announcement.status}</Badge></Td>
