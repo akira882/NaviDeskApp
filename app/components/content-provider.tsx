@@ -1,3 +1,24 @@
+/**
+ * ⚠️ WARNING: MVP IMPLEMENTATION ONLY ⚠️
+ *
+ * This is a client-side state management for prototyping content management UI.
+ *
+ * CRITICAL LIMITATIONS:
+ * 1. All changes are stored in browser memory only (lost on page reload)
+ * 2. Changes are not persisted to database
+ * 3. Changes are not shared across users or browser tabs
+ * 4. Audit logs are generated client-side (tamperable)
+ * 5. NOT SUITABLE FOR PRODUCTION USE
+ *
+ * PRODUCTION REQUIREMENTS:
+ * - Replace with Server Actions or API Routes
+ * - Persist changes to database
+ * - Generate audit logs server-side
+ * - Implement optimistic UI updates
+ * - Add transaction support
+ *
+ * See docs/PRODUCTION_ROADMAP.md Phase 2 & 3 for migration plan.
+ */
 "use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
