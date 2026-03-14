@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * ⚠️ WARNING: MVP IMPLEMENTATION ONLY ⚠️
  *
@@ -19,7 +21,6 @@
  *
  * See docs/PRODUCTION_ROADMAP.md Phase 2 & 3 for migration plan.
  */
-"use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
 
@@ -28,48 +29,88 @@ import { buildAuditLog, resolveActorId } from "@/lib/content-helpers";
 import type {
   Announcement,
   Article,
+  AuditAction,
+  AuditLog,
+  ContentStatus,
   FAQ,
   PortalContentState,
   QuickLink,
   Role
 } from "@/types/domain";
 
+type ArticleInput = Omit<Article, "id" | "updatedAt" | "updatedBy">;
+type FaqInput = Omit<FAQ, "id" | "updatedAt" | "updatedBy">;
+type AnnouncementInput = Omit<Announcement, "id" | "updatedAt" | "updatedBy" | "publishedAt"> & {
+  publishedAt?: string | null;
+};
+type QuickLinkInput = Omit<QuickLink, "id">;
+
 type ContentContextValue = PortalContentState & {
-  addArticle: (input: Omit<Article, "id" | "updatedAt" | "updatedBy">, role: Role) => void;
-  updateArticle: (id: string, input: Omit<Article, "id" | "updatedAt" | "updatedBy">, role: Role) => void;
+  addArticle: (input: ArticleInput, role: Role) => void;
+  updateArticle: (id: string, input: ArticleInput, role: Role) => void;
   deleteArticle: (id: string, role: Role) => void;
   toggleArticleStatus: (id: string, role: Role) => void;
-  addFaq: (input: Omit<FAQ, "id" | "updatedAt" | "updatedBy">, role: Role) => void;
-  updateFaq: (id: string, input: Omit<FAQ, "id" | "updatedAt" | "updatedBy">, role: Role) => void;
+  addFaq: (input: FaqInput, role: Role) => void;
+  updateFaq: (id: string, input: FaqInput, role: Role) => void;
   deleteFaq: (id: string, role: Role) => void;
   toggleFaqStatus: (id: string, role: Role) => void;
-  addAnnouncement: (
-    input: Omit<Announcement, "id" | "updatedAt" | "updatedBy" | "publishedAt"> & {
-      publishedAt?: string | null;
-    },
-    role: Role
-  ) => void;
-  updateAnnouncement: (
-    id: string,
-    input: Omit<Announcement, "id" | "updatedAt" | "updatedBy" | "publishedAt"> & {
-      publishedAt?: string | null;
-    },
-    role: Role
-  ) => void;
+  addAnnouncement: (input: AnnouncementInput, role: Role) => void;
+  updateAnnouncement: (id: string, input: AnnouncementInput, role: Role) => void;
   deleteAnnouncement: (id: string, role: Role) => void;
   toggleAnnouncementStatus: (id: string, role: Role) => void;
-  addQuickLink: (input: Omit<QuickLink, "id">, role: Role) => void;
-  updateQuickLink: (id: string, input: Omit<QuickLink, "id">, role: Role) => void;
+  addQuickLink: (input: QuickLinkInput, role: Role) => void;
+  updateQuickLink: (id: string, input: QuickLinkInput, role: Role) => void;
   deleteQuickLink: (id: string, role: Role) => void;
 };
 
+type MutationDetails = {
+  action: AuditAction;
+  targetType: AuditLog["targetType"];
+  targetId: string;
+  detail: string;
+};
+
+type MutationResult = {
+  nextState: PortalContentState;
+  audit: MutationDetails;
+} | null;
+
 const ContentContext = createContext<ContentContextValue | null>(null);
 
-function appendLog(state: PortalContentState, log: PortalContentState["auditLogs"][number]) {
+function appendLog(state: PortalContentState, log: AuditLog) {
   return {
     ...state,
     auditLogs: [log, ...state.auditLogs]
   };
+}
+
+function addAuditFields<T extends { updatedAt: string; updatedBy: string }>(
+  item: Omit<T, "updatedAt" | "updatedBy">,
+  timestamp: string,
+  actorId: string
+): T {
+  return {
+    ...item,
+    updatedAt: timestamp,
+    updatedBy: actorId
+  } as T;
+}
+
+function createMutation(nextState: PortalContentState, audit: MutationDetails): MutationResult {
+  return { nextState, audit };
+}
+
+function updateAnnouncementPublishedAt(
+  currentPublishedAt: string | null,
+  nextStatus: ContentStatus,
+  requestedPublishedAt: string | null | undefined,
+  timestamp: string
+) {
+  if (nextStatus !== "published") {
+    return null;
+  }
+
+  return requestedPublishedAt ?? currentPublishedAt ?? timestamp;
 }
 
 export function ContentProvider({
@@ -82,355 +123,370 @@ export function ContentProvider({
   const [state, setState] = useState<PortalContentState>(initialState);
 
   const value = useMemo<ContentContextValue>(() => {
-    function actorId(role: Role) {
-      return resolveActorId(users, role);
+    const actorIdForRole = (role: Role) => resolveActorId(users, role);
+
+    function runMutation(role: Role, buildNextState: (current: PortalContentState, timestamp: string, actorId: string) => MutationResult) {
+      setState((current) => {
+        const timestamp = new Date().toISOString();
+        const actorId = actorIdForRole(role);
+        const result = buildNextState(current, timestamp, actorId);
+
+        if (!result) {
+          return current;
+        }
+
+        return appendLog(
+          result.nextState,
+          buildAuditLog({
+            actorId,
+            action: result.audit.action,
+            targetType: result.audit.targetType,
+            targetId: result.audit.targetId,
+            detail: result.audit.detail
+          })
+        );
+      });
     }
 
     return {
       ...state,
       addArticle(input, role) {
-        const id = `art-${Date.now()}`;
-        const nextArticle: Article = {
-          ...input,
-          id,
-          updatedAt: new Date().toISOString(),
-          updatedBy: actorId(role)
-        };
+        runMutation(role, (current, timestamp, actorId) => {
+          const id = `art-${Date.now()}`;
+          const nextArticle = addAuditFields<Article>({ ...input, id }, timestamp, actorId);
 
-        setState((current) =>
-          appendLog(
+          return createMutation(
             {
               ...current,
               articles: [nextArticle, ...current.articles]
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "create",
               targetType: "article",
               targetId: id,
               detail: `記事「${input.title}」を作成`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       updateArticle(id, input, role) {
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current, timestamp, actorId) =>
+          createMutation(
             {
               ...current,
               articles: current.articles.map((article) =>
-                article.id === id
-                  ? { ...article, ...input, updatedAt: new Date().toISOString(), updatedBy: actorId(role) }
-                  : article
+                article.id === id ? addAuditFields<Article>({ ...article, ...input }, timestamp, actorId) : article
               )
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "update",
               targetType: "article",
               targetId: id,
               detail: `記事「${input.title}」を更新`
-            })
+            }
           )
         );
       },
       deleteArticle(id, role) {
-        const title = state.articles.find((article) => article.id === id)?.title ?? id;
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current) => {
+          const title = current.articles.find((article) => article.id === id)?.title ?? id;
+
+          return createMutation(
             {
               ...current,
               articles: current.articles.filter((article) => article.id !== id)
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "delete",
               targetType: "article",
               targetId: id,
               detail: `記事「${title}」を削除`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       toggleArticleStatus(id, role) {
-        const target = state.articles.find((article) => article.id === id);
-        if (!target) {
-          return;
-        }
-        const nextStatus = target.status === "published" ? "draft" : "published";
+        runMutation(role, (current, timestamp, actorId) => {
+          const target = current.articles.find((article) => article.id === id);
 
-        setState((current) =>
-          appendLog(
+          if (!target) {
+            return null;
+          }
+
+          const nextStatus = target.status === "published" ? "draft" : "published";
+
+          return createMutation(
             {
               ...current,
               articles: current.articles.map((article) =>
                 article.id === id
-                  ? { ...article, status: nextStatus, updatedAt: new Date().toISOString(), updatedBy: actorId(role) }
+                  ? addAuditFields<Article>({ ...article, status: nextStatus }, timestamp, actorId)
                   : article
               )
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "publish-toggle",
               targetType: "article",
               targetId: id,
               detail: `記事「${target.title}」を${nextStatus === "published" ? "公開" : "下書き化"}`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       addFaq(input, role) {
-        const id = `faq-${Date.now()}`;
-        const nextFaq: FAQ = {
-          ...input,
-          id,
-          updatedAt: new Date().toISOString(),
-          updatedBy: actorId(role)
-        };
+        runMutation(role, (current, timestamp, actorId) => {
+          const id = `faq-${Date.now()}`;
+          const nextFaq = addAuditFields<FAQ>({ ...input, id }, timestamp, actorId);
 
-        setState((current) =>
-          appendLog(
+          return createMutation(
             {
               ...current,
               faqs: [nextFaq, ...current.faqs]
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "create",
               targetType: "faq",
               targetId: id,
               detail: `FAQ「${input.question}」を作成`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       updateFaq(id, input, role) {
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current, timestamp, actorId) =>
+          createMutation(
             {
               ...current,
               faqs: current.faqs.map((faq) =>
-                faq.id === id
-                  ? { ...faq, ...input, updatedAt: new Date().toISOString(), updatedBy: actorId(role) }
-                  : faq
+                faq.id === id ? addAuditFields<FAQ>({ ...faq, ...input }, timestamp, actorId) : faq
               )
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "update",
               targetType: "faq",
               targetId: id,
               detail: `FAQ「${input.question}」を更新`
-            })
+            }
           )
         );
       },
       deleteFaq(id, role) {
-        const question = state.faqs.find((faq) => faq.id === id)?.question ?? id;
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current) => {
+          const question = current.faqs.find((faq) => faq.id === id)?.question ?? id;
+
+          return createMutation(
             {
               ...current,
               faqs: current.faqs.filter((faq) => faq.id !== id)
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "delete",
               targetType: "faq",
               targetId: id,
               detail: `FAQ「${question}」を削除`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       toggleFaqStatus(id, role) {
-        const target = state.faqs.find((faq) => faq.id === id);
-        if (!target) {
-          return;
-        }
-        const nextStatus = target.status === "published" ? "draft" : "published";
+        runMutation(role, (current, timestamp, actorId) => {
+          const target = current.faqs.find((faq) => faq.id === id);
 
-        setState((current) =>
-          appendLog(
+          if (!target) {
+            return null;
+          }
+
+          const nextStatus = target.status === "published" ? "draft" : "published";
+
+          return createMutation(
             {
               ...current,
               faqs: current.faqs.map((faq) =>
-                faq.id === id
-                  ? { ...faq, status: nextStatus, updatedAt: new Date().toISOString(), updatedBy: actorId(role) }
-                  : faq
+                faq.id === id ? addAuditFields<FAQ>({ ...faq, status: nextStatus }, timestamp, actorId) : faq
               )
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "publish-toggle",
               targetType: "faq",
               targetId: id,
               detail: `FAQ「${target.question}」を${nextStatus === "published" ? "公開" : "下書き化"}`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       addAnnouncement(input, role) {
-        const id = `ann-${Date.now()}`;
-        const nextAnnouncement: Announcement = {
-          ...input,
-          id,
-          publishedAt: input.status === "published" ? input.publishedAt ?? new Date().toISOString() : null,
-          updatedAt: new Date().toISOString(),
-          updatedBy: actorId(role)
-        };
+        runMutation(role, (current, timestamp, actorId) => {
+          const id = `ann-${Date.now()}`;
+          const nextAnnouncement = addAuditFields<Announcement>(
+            {
+              ...input,
+              id,
+              publishedAt: updateAnnouncementPublishedAt(null, input.status, input.publishedAt, timestamp)
+            },
+            timestamp,
+            actorId
+          );
 
-        setState((current) =>
-          appendLog(
+          return createMutation(
             {
               ...current,
               announcements: [nextAnnouncement, ...current.announcements]
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "create",
               targetType: "announcement",
               targetId: id,
               detail: `お知らせ「${input.title}」を作成`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       updateAnnouncement(id, input, role) {
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current, timestamp, actorId) =>
+          createMutation(
             {
               ...current,
               announcements: current.announcements.map((announcement) =>
                 announcement.id === id
-                  ? {
-                      ...announcement,
-                      ...input,
-                      publishedAt:
-                        input.status === "published"
-                          ? input.publishedAt ?? announcement.publishedAt ?? new Date().toISOString()
-                          : null,
-                      updatedAt: new Date().toISOString(),
-                      updatedBy: actorId(role)
-                    }
+                  ? addAuditFields<Announcement>(
+                      {
+                        ...announcement,
+                        ...input,
+                        publishedAt: updateAnnouncementPublishedAt(
+                          announcement.publishedAt,
+                          input.status,
+                          input.publishedAt,
+                          timestamp
+                        )
+                      },
+                      timestamp,
+                      actorId
+                    )
                   : announcement
               )
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "update",
               targetType: "announcement",
               targetId: id,
               detail: `お知らせ「${input.title}」を更新`
-            })
+            }
           )
         );
       },
       deleteAnnouncement(id, role) {
-        const title = state.announcements.find((announcement) => announcement.id === id)?.title ?? id;
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current) => {
+          const title = current.announcements.find((announcement) => announcement.id === id)?.title ?? id;
+
+          return createMutation(
             {
               ...current,
               announcements: current.announcements.filter((announcement) => announcement.id !== id)
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "delete",
               targetType: "announcement",
               targetId: id,
               detail: `お知らせ「${title}」を削除`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       toggleAnnouncementStatus(id, role) {
-        const target = state.announcements.find((announcement) => announcement.id === id);
-        if (!target) {
-          return;
-        }
-        const nextStatus = target.status === "published" ? "draft" : "published";
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current, timestamp, actorId) => {
+          const target = current.announcements.find((announcement) => announcement.id === id);
+
+          if (!target) {
+            return null;
+          }
+
+          const nextStatus = target.status === "published" ? "draft" : "published";
+
+          return createMutation(
             {
               ...current,
               announcements: current.announcements.map((announcement) =>
                 announcement.id === id
-                  ? {
-                      ...announcement,
-                      status: nextStatus,
-                      publishedAt: nextStatus === "published" ? new Date().toISOString() : null,
-                      updatedAt: new Date().toISOString(),
-                      updatedBy: actorId(role)
-                    }
+                  ? addAuditFields<Announcement>(
+                      {
+                        ...announcement,
+                        status: nextStatus,
+                        publishedAt: updateAnnouncementPublishedAt(
+                          announcement.publishedAt,
+                          nextStatus,
+                          undefined,
+                          timestamp
+                        )
+                      },
+                      timestamp,
+                      actorId
+                    )
                   : announcement
               )
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "publish-toggle",
               targetType: "announcement",
               targetId: id,
               detail: `お知らせ「${target.title}」を${nextStatus === "published" ? "公開" : "下書き化"}`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       addQuickLink(input, role) {
-        const id = `ql-${Date.now()}`;
-        const nextQuickLink: QuickLink = { ...input, id };
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current) => {
+          const id = `ql-${Date.now()}`;
+          const nextQuickLink: QuickLink = { ...input, id };
+
+          return createMutation(
             {
               ...current,
               quickLinks: [...current.quickLinks, nextQuickLink]
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "create",
               targetType: "quick-link",
               targetId: id,
               detail: `クイックリンク「${input.label}」を作成`
-            })
-          )
-        );
+            }
+          );
+        });
       },
       updateQuickLink(id, input, role) {
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current) =>
+          createMutation(
             {
               ...current,
               quickLinks: current.quickLinks.map((quickLink) =>
                 quickLink.id === id ? { ...quickLink, ...input } : quickLink
               )
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "update",
               targetType: "quick-link",
               targetId: id,
               detail: `クイックリンク「${input.label}」を更新`
-            })
+            }
           )
         );
       },
       deleteQuickLink(id, role) {
-        const label = state.quickLinks.find((quickLink) => quickLink.id === id)?.label ?? id;
-        setState((current) =>
-          appendLog(
+        runMutation(role, (current) => {
+          const label = current.quickLinks.find((quickLink) => quickLink.id === id)?.label ?? id;
+
+          return createMutation(
             {
               ...current,
               quickLinks: current.quickLinks.filter((quickLink) => quickLink.id !== id)
             },
-            buildAuditLog({
-              actorId: actorId(role),
+            {
               action: "delete",
               targetType: "quick-link",
               targetId: id,
               detail: `クイックリンク「${label}」を削除`
-            })
-          )
-        );
+            }
+          );
+        });
       }
     };
   }, [state]);

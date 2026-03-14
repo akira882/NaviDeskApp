@@ -1,5 +1,5 @@
 import type { User } from "@/types/domain";
-import { AuthenticationError, type AuthProvider } from "./auth-provider";
+import type { AuthProvider } from "./auth-provider";
 
 /**
  * SSO Authentication Provider (STUB)

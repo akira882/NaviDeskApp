@@ -7,6 +7,12 @@
 - every administrative content mutation must be attributable
 - role-based visibility must be enforced consistently
 
+## Dream team responsibilities
+
+- Chief Test Engineer owns `npm run lint`, `npm run test`, and `npm run build` as release gates
+- Security Architect reviews client/server boundaries before shipping role or AI changes
+- Knowledge Operations Lead reviews information architecture when categories, search, or content flows change
+
 ## Release checklist
 
 1. Run `npm run lint`
