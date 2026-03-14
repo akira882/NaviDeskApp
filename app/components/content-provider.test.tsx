@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
+import { ContentProvider, useContent } from "@/app/components/content-provider";
 import { announcements, articles, auditLogs, faqs, quickLinks } from "@/data/mock/seed";
-import { ContentProvider, useContent } from "@/components/content-provider";
 import { createInitialPortalState } from "@/lib/content-helpers";
 
 const initialState = createInitialPortalState({
@@ -40,17 +40,26 @@ function Harness() {
       >
         add article
       </button>
-      <button
-        type="button"
-        onClick={() => content.toggleArticleStatus("art-paid-leave", "admin")}
-      >
+      <button type="button" onClick={() => content.toggleArticleStatus("art-paid-leave", "admin")}>
         toggle article
+      </button>
+      <button type="button" onClick={() => content.deleteQuickLink("ql-4", "editor")}>
+        delete quicklink
       </button>
       <button
         type="button"
-        onClick={() => content.deleteQuickLink("ql-4", "editor")}
+        onClick={() =>
+          content.addAnnouncement(
+            {
+              title: "新しい運用連絡",
+              body: "本文",
+              status: "published"
+            },
+            "editor"
+          )
+        }
       >
-        delete quicklink
+        add announcement
       </button>
       <p data-testid="article-count">{content.articles.length}</p>
       <p data-testid="paid-leave-status">
@@ -58,6 +67,9 @@ function Harness() {
       </p>
       <p data-testid="quicklink-exists">
         {String(content.quickLinks.some((quickLink) => quickLink.id === "ql-4"))}
+      </p>
+      <p data-testid="latest-announcement-published-at">
+        {content.announcements[0]?.publishedAt ? "set" : "missing"}
       </p>
       <p data-testid="audit-count">{content.auditLogs.length}</p>
     </div>
@@ -85,6 +97,9 @@ describe("ContentProvider", () => {
 
     await user.click(screen.getByRole("button", { name: "delete quicklink" }));
     expect(screen.getByTestId("quicklink-exists")).toHaveTextContent("false");
-    expect(Number(screen.getByTestId("audit-count").textContent)).toBe(initialAuditCount + 3);
+
+    await user.click(screen.getByRole("button", { name: "add announcement" }));
+    expect(screen.getByTestId("latest-announcement-published-at")).toHaveTextContent("set");
+    expect(Number(screen.getByTestId("audit-count").textContent)).toBe(initialAuditCount + 4);
   });
 });
