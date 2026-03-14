@@ -2,8 +2,18 @@ import { AppShell } from "@/components/app-shell";
 import { ArticleDetailClient } from "@/components/article-detail-client";
 import { articleRepository } from "@/data/repositories/content-repository";
 
+/**
+ * Generate static params for article pages
+ *
+ * SECURITY: Only published articles visible to 'employee' role are included.
+ * This prevents leaking the existence of draft or manager-only articles.
+ *
+ * PRODUCTION: Consider moving manager/admin articles to dynamic rendering
+ * for additional security and flexibility.
+ */
 export function generateStaticParams() {
-  return articleRepository.listAllForAdmin().map((article) => ({ slug: article.slug }));
+  // Only include published articles visible to the lowest privilege level
+  return articleRepository.list("employee").map((article) => ({ slug: article.slug }));
 }
 
 export default async function ArticleDetailPage({
