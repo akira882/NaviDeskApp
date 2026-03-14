@@ -28,9 +28,9 @@ export function FAQSearchClient({
   const displayFaqs: FAQ[] = query || categoryId ? results : listVisibleFaqs(content, role);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card>
-        <CardContent className="grid gap-4 md:grid-cols-[1.6fr_0.6fr]">
+        <CardContent className="grid gap-3 sm:gap-4 sm:grid-cols-[1.6fr_0.6fr]">
           <SearchBar value={query} onChange={setQuery} placeholder="質問文、キーワード、タグで検索" />
           <Select value={categoryId} onChange={(event: React.ChangeEvent<HTMLSelectElement>) => setCategoryId(event.target.value)}>
             <option value="">すべてのカテゴリ</option>
@@ -43,32 +43,32 @@ export function FAQSearchClient({
         </CardContent>
       </Card>
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {displayFaqs.map((faq) => {
           const isHighlight = faq.id === highlightId;
           const categoryName = categories.find((category) => category.id === faq.categoryId)?.name ?? "未分類";
 
           return (
             <Card key={faq.id} className={isHighlight ? "border-teal-600" : undefined}>
-              <CardContent className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge>{categoryName}</Badge>
+              <CardContent className="space-y-2.5 sm:space-y-3">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <Badge className="text-xs">{categoryName}</Badge>
                   {faq.tags.map((tag) => (
-                    <Badge key={tag} className="bg-slate-50">
+                    <Badge key={tag} className="bg-slate-50 text-xs">
                       {tag}
                     </Badge>
                   ))}
                   <span className="text-xs text-slate-500">更新日: {formatDate(faq.updatedAt)}</span>
                 </div>
-                <h2 className="text-lg font-semibold text-ink">{faq.question}</h2>
-                <p className="text-sm leading-7 text-slate-700">{faq.answer}</p>
+                <h2 className="text-base font-semibold text-ink sm:text-lg">{faq.question}</h2>
+                <p className="text-xs leading-6 text-slate-700 sm:text-sm sm:leading-7">{faq.answer}</p>
               </CardContent>
             </Card>
           );
         })}
         {displayFaqs.length === 0 ? (
           <Card>
-            <CardContent className="text-sm text-slate-600">条件に一致する FAQ が見つかりませんでした。</CardContent>
+            <CardContent className="text-xs text-slate-600 sm:text-sm">条件に一致する FAQ が見つかりませんでした。</CardContent>
           </Card>
         ) : null}
       </div>

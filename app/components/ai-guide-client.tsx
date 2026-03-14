@@ -21,25 +21,25 @@ export function AiGuideClient() {
   );
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+    <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
       <Card>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4">
           <div>
-            <h2 className="text-xl font-semibold text-ink">AI案内</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <h2 className="text-lg font-semibold text-ink sm:text-xl">AI案内</h2>
+            <p className="mt-1.5 text-xs leading-5 text-slate-600 sm:mt-2 sm:text-sm sm:leading-6">
               先に社内記事と FAQ を検索し、根拠が弱い場合は断定せず通常検索候補へフォールバックします。
             </p>
           </div>
           <SearchBar value={question} onChange={setQuestion} placeholder="例: VPNに接続できないときの確認手順は？" />
-          <p className="rounded-xl bg-surface-muted p-4 text-sm text-slate-600">
+          <p className="rounded-xl bg-surface-muted p-3 text-xs text-slate-600 sm:p-4 sm:text-sm">
             AI は制度や手順を創作しません。根拠がない場合は「分からない」と返し、候補のみ表示します。
           </p>
         </CardContent>
       </Card>
 
       <Card>
-        <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold text-ink">回答結果</h2>
+        <CardContent className="space-y-3 sm:space-y-4">
+          <h2 className="text-lg font-semibold text-ink sm:text-xl">回答結果</h2>
           {!question ? (
             <p className="text-sm text-slate-600">質問を入力すると、社内コンテンツを根拠にした案内を表示します。</p>
           ) : result.mode === "answer" ? (

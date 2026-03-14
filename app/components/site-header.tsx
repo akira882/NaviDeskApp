@@ -22,29 +22,35 @@ export function SiteHeader() {
 
   return (
     <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <Link href="/" className="text-xl font-semibold tracking-tight text-ink">
-            NaviDeskApp
-          </Link>
-          <p className="text-sm text-slate-500">Enterprise knowledge operations portal for internal teams</p>
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-3 py-3 sm:px-4 sm:py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <Link href="/" className="text-lg font-semibold tracking-tight text-ink sm:text-xl">
+              NaviDeskApp
+            </Link>
+            <p className="hidden text-sm text-slate-500 sm:block">Enterprise knowledge operations portal for internal teams</p>
+          </div>
+          <div className="flex items-center gap-2 lg:hidden">
+            <span className="text-xs text-slate-500">ロール</span>
+            <Badge className="bg-teal-50 text-xs">{getRoleLabel(role)}</Badge>
+          </div>
         </div>
-        <nav className="flex flex-wrap items-center gap-2">
+        <nav className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-ink"
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-xs text-slate-600 transition hover:bg-slate-100 hover:text-ink sm:gap-2 sm:px-3 sm:text-sm"
               >
-                <Icon className="h-4 w-4" />
-                {item.label}
+                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="truncate">{item.label}</span>
               </Link>
             );
           })}
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="hidden items-center gap-3 lg:flex">
           <span className="text-sm text-slate-500">セッションロール</span>
           <Badge className="bg-teal-50">{getRoleLabel(role)}</Badge>
         </div>

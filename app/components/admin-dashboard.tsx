@@ -65,9 +65,9 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card>
-        <CardContent className="grid gap-4 md:grid-cols-4">
+        <CardContent className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           <MetricCard label="記事" value={content.articles.length} />
           <MetricCard label="FAQ" value={content.faqs.length} />
           <MetricCard label="お知らせ" value={content.announcements.length} />
@@ -76,8 +76,8 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
       </Card>
 
       <Card>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-2">
+        <CardContent className="space-y-3 sm:space-y-4">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {[
               { key: "article", label: "記事" },
               { key: "faq", label: "FAQ" },
@@ -96,9 +96,9 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
           </div>
 
           {resourceType === "article" ? (
-            <div className="grid gap-6 xl:grid-cols-[1.1fr_1.2fr]">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-1 xl:grid-cols-[1.1fr_1.2fr]">
               <form
-                className="space-y-3"
+                className="space-y-2.5 sm:space-y-3"
                 onSubmit={articleForm.handleSubmit((values) => {
                   const currentArticle = editingArticleId
                     ? content.articles.find((article: Article) => article.id === editingArticleId)
@@ -565,9 +565,9 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
 
 function MetricCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-semibold text-ink">{value}</p>
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
+      <p className="text-xs text-slate-500 sm:text-sm">{label}</p>
+      <p className="mt-1.5 text-2xl font-semibold text-ink sm:mt-2 sm:text-3xl">{value}</p>
     </div>
   );
 }
@@ -596,12 +596,12 @@ function FormHeader({ title }: { title: string }) {
 
 function ResourceTable({ columns, rows }: { columns: string[]; rows: React.ReactNode[] }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200">
+    <div className="-mx-3 overflow-x-auto rounded-xl border border-slate-200 sm:mx-0">
       <Table>
         <thead className="bg-slate-50">
           <tr>
             {columns.map((column) => (
-              <Th key={column}>{column}</Th>
+              <Th key={column} className="whitespace-nowrap text-xs sm:text-sm">{column}</Th>
             ))}
           </tr>
         </thead>

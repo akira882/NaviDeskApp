@@ -9,6 +9,7 @@ import {
   users
 } from "@/data/mock/seed";
 import { canAccess } from "@/lib/roles";
+import { scoreText } from "@/lib/utils";
 import type {
   AiResponse,
   Announcement,
@@ -18,15 +19,6 @@ import type {
   SearchResult,
   User
 } from "@/types/domain";
-
-function scoreText(query: string, text: string) {
-  const tokens = query
-    .toLowerCase()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  return tokens.reduce((score, token) => score + (text.toLowerCase().includes(token) ? 1 : 0), 0);
-}
 
 export const userRepository = {
   getCurrentUser(role: Role): User {

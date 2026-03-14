@@ -23,3 +23,16 @@ export function splitTags(tags: string) {
     .map((tag) => tag.trim())
     .filter(Boolean);
 }
+
+/**
+ * Scores text relevance based on query tokens
+ * Returns the number of matching tokens found in the text
+ */
+export function scoreText(query: string, text: string): number {
+  const tokens = query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  return tokens.reduce((score, token) => score + (text.toLowerCase().includes(token) ? 1 : 0), 0);
+}
