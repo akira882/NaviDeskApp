@@ -234,7 +234,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
           ) : null}
 
           {resourceType === "faq" ? (
-            <div className="grid gap-6 xl:grid-cols-[1.1fr_1.2fr]">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-1 xl:grid-cols-[1.1fr_1.2fr]">
               <form
                 className="space-y-3"
                 onSubmit={faqForm.handleSubmit((values) => {
@@ -358,7 +358,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
           ) : null}
 
           {resourceType === "announcement" ? (
-            <div className="grid gap-6 xl:grid-cols-[1.1fr_1.2fr]">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-1 xl:grid-cols-[1.1fr_1.2fr]">
               <form
                 className="space-y-3"
                 onSubmit={announcementForm.handleSubmit((values) => {
@@ -456,7 +456,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
           ) : null}
 
           {resourceType === "quick-link" ? (
-            <div className="grid gap-6 xl:grid-cols-[1.1fr_1.2fr]">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-1 xl:grid-cols-[1.1fr_1.2fr]">
               <form
                 className="space-y-3"
                 onSubmit={quickLinkForm.handleSubmit((values) => {
