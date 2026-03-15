@@ -31,9 +31,17 @@ export const announcementFormSchema = z.object({
   status: statusSchema
 });
 
+function isValidQuickLinkTarget(value: string) {
+  if (value.startsWith("/")) {
+    return true;
+  }
+
+  return z.string().url().safeParse(value).success;
+}
+
 export const quickLinkFormSchema = z.object({
   label: z.string().min(2, "表示名を入力してください"),
-  url: z.string().url("URL形式で入力してください"),
+  url: z.string().refine(isValidQuickLinkTarget, "https://... または /path 形式で入力してください"),
   categoryId: z.string().min(1, "カテゴリを選択してください"),
   description: z.string().min(5, "説明を入力してください"),
   sortOrder: z.coerce.number().int().min(1, "並び順は1以上です")

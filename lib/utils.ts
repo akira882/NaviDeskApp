@@ -17,6 +17,20 @@ export function formatDate(date: string | null) {
   }).format(new Date(date));
 }
 
+export function formatDateTime(date: string | null) {
+  if (!date) {
+    return "未設定";
+  }
+
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(date));
+}
+
 export function splitTags(tags: string) {
   return tags
     .split(",")

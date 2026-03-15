@@ -4,14 +4,23 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { useContent } from "@/components/content-provider";
+import { ContentGovernanceCard } from "@/components/content-governance-card";
 import { useRole } from "@/components/role-provider";
-import { categoryRepository, userRepository } from "@/data/repositories/content-repository";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { listAuditLogsForTarget } from "@/lib/audit";
 import { listVisibleArticles } from "@/lib/content-helpers";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateTime } from "@/lib/utils";
 
-export function ArticleDetailClient({ slug }: { slug: string }) {
+export function ArticleDetailClient({
+  slug,
+  categoryNameById,
+  userNameById
+}: {
+  slug: string;
+  categoryNameById: Record<string, string>;
+  userNameById: Record<string, string>;
+}) {
   const { role } = useRole();
   const content = useContent();
   const visibleArticles = listVisibleArticles(content, role);
@@ -27,9 +36,8 @@ export function ArticleDetailClient({ slug }: { slug: string }) {
     );
   }
 
-  const category = categoryRepository.findById(article.categoryId);
   const relatedArticles = visibleArticles.filter((item) => article.relatedArticleIds.includes(item.id));
-  const editor = userRepository.listUsers().find((user) => user.id === article.updatedBy);
+  const articleLogs = listAuditLogsForTarget(content.auditLogs, "article", article.id);
 
   return (
     <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-[1.35fr_0.65fr]">
@@ -37,7 +45,7 @@ export function ArticleDetailClient({ slug }: { slug: string }) {
         <Card>
           <CardContent className="space-y-3 sm:space-y-4">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <Badge className="text-xs">{category?.name ?? "未分類"}</Badge>
+              <Badge className="text-xs">{categoryNameById[article.categoryId] ?? "未分類"}</Badge>
               <Badge className="bg-slate-50 text-xs">{article.visibilityRole}</Badge>
               {article.tags.map((tag) => (
                 <Badge key={tag} className="bg-teal-50 text-xs">
@@ -49,13 +57,22 @@ export function ArticleDetailClient({ slug }: { slug: string }) {
             <p className="rounded-xl bg-surface-muted p-3 text-xs leading-6 text-slate-700 sm:p-4 sm:text-sm sm:leading-7">{article.summary}</p>
             <div className="space-y-0.5 text-xs text-slate-500 sm:space-y-1 sm:text-sm">
               <p>最終更新日: {formatDate(article.updatedAt)}</p>
-              <p>更新者: {editor?.name ?? "不明"}</p>
+              <p>更新者: {userNameById[article.updatedBy] ?? "不明"}</p>
+              <p>レビュー日時: {formatDateTime(article.reviewedAt)}</p>
             </div>
             <div className="whitespace-pre-line text-xs leading-7 text-slate-700 sm:text-sm sm:leading-8">{article.content}</div>
           </CardContent>
         </Card>
       </article>
       <aside className="space-y-3 sm:space-y-4">
+        <ContentGovernanceCard
+          approvalStatus={article.approvalStatus}
+          reviewedAt={article.reviewedAt}
+          reviewerName={article.reviewedBy ? userNameById[article.reviewedBy] ?? null : null}
+          reviewComment={article.reviewComment}
+          updatedAt={article.updatedAt}
+          auditLogs={articleLogs}
+        />
         <Card>
           <CardContent className="space-y-2.5 sm:space-y-3">
             <h3 className="text-base font-semibold text-ink sm:text-lg">関連情報</h3>

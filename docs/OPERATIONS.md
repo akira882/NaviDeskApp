@@ -25,12 +25,17 @@
    - `/ai-guide`
    - `/admin`
    - `/admin/audit-log`
+   - `/admin/search-insights`
 5. Verify role-specific visibility:
    - `employee`
    - `manager`
    - `editor`
    - `admin`
 6. Verify administrative mutations update audit logs
+7. Verify pending approval items can be approved or rejected with review comments
+8. Verify stale content appears in the review priority queue
+9. Verify zero-result searches appear in the search insufficiency panel
+10. Verify audit logs can be filtered by operation, target, and keyword
 
 ## Production hardening backlog
 

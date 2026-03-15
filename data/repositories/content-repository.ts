@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { Route } from "next";
 import {
   announcements,
@@ -6,6 +8,7 @@ import {
   categories,
   faqs,
   quickLinks,
+  searchLogs,
   users
 } from "@/data/mock/seed";
 import { canAccess } from "@/lib/roles";
@@ -19,6 +22,10 @@ import type {
   SearchResult,
   User
 } from "@/types/domain";
+
+function isApprovedForReaders(status: { status: "draft" | "published"; approvalStatus: "not_requested" | "pending" | "approved" | "changes_requested" }) {
+  return status.status === "published" && status.approvalStatus === "approved";
+}
 
 export const userRepository = {
   getCurrentUser(role: Role): User {
@@ -44,7 +51,7 @@ export const categoryRepository = {
 export const articleRepository = {
   list(role: Role) {
     return articles.filter(
-      (article) => article.status === "published" && canAccess(role, article.visibilityRole)
+      (article) => isApprovedForReaders(article) && canAccess(role, article.visibilityRole)
     );
   },
   listByCategory(categoryId: string, role: Role) {
@@ -63,7 +70,7 @@ export const articleRepository = {
 
 export const faqRepository = {
   list(role: Role) {
-    return faqs.filter((faq) => faq.status === "published" && canAccess(role, faq.visibilityRole));
+    return faqs.filter((faq) => isApprovedForReaders(faq) && canAccess(role, faq.visibilityRole));
   },
   search(params: { query?: string; categoryId?: string; role: Role }) {
     const query = params.query?.trim().toLowerCase() ?? "";
@@ -83,7 +90,7 @@ export const faqRepository = {
 export const announcementRepository = {
   listPublished(): Announcement[] {
     return announcements
-      .filter((announcement) => announcement.status === "published")
+      .filter((announcement) => isApprovedForReaders(announcement))
       .sort((a, b) => (a.publishedAt && b.publishedAt ? b.publishedAt.localeCompare(a.publishedAt) : 0));
   },
   listAllForAdmin() {
@@ -109,6 +116,19 @@ export const auditLogRepository = {
   }
 };
 
+export const searchLogRepository = {
+  list() {
+    return [...searchLogs].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  }
+};
+
+/**
+ * Search repository
+ *
+ * NOTE: This search logic is duplicated in lib/content-helpers#searchContent
+ * Consider extracting to a shared utility function in future refactoring.
+ * See PRODUCTION_ROADMAP.md Phase 2 for database-backed search migration.
+ */
 export const searchRepository = {
   search(query: string, role: Role): SearchResult[] {
     if (!query.trim()) {

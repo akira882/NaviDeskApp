@@ -6,6 +6,9 @@ export type Role = (typeof roles)[number];
 export const contentStatuses = ["draft", "published"] as const;
 export type ContentStatus = (typeof contentStatuses)[number];
 
+export const approvalStatuses = ["not_requested", "pending", "approved", "changes_requested"] as const;
+export type ApprovalStatus = (typeof approvalStatuses)[number];
+
 export type User = {
   id: string;
   name: string;
@@ -32,6 +35,10 @@ export type Article = {
   status: ContentStatus;
   visibilityRole: Role;
   relatedArticleIds: string[];
+  approvalStatus: ApprovalStatus;
+  reviewComment: string | null;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
   updatedAt: string;
   updatedBy: string;
 };
@@ -44,6 +51,10 @@ export type FAQ = {
   tags: string[];
   status: ContentStatus;
   visibilityRole: Role;
+  approvalStatus: ApprovalStatus;
+  reviewComment: string | null;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
   updatedAt: string;
   updatedBy: string;
 };
@@ -54,6 +65,10 @@ export type Announcement = {
   body: string;
   status: ContentStatus;
   publishedAt: string | null;
+  approvalStatus: ApprovalStatus;
+  reviewComment: string | null;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
   updatedAt: string;
   updatedBy: string;
 };
@@ -67,7 +82,7 @@ export type QuickLink = {
   sortOrder: number;
 };
 
-export type AuditAction = "create" | "update" | "delete" | "publish-toggle";
+export type AuditAction = "create" | "update" | "delete" | "publish-toggle" | "submit-review" | "approve" | "reject";
 
 export type AuditLog = {
   id: string;
@@ -77,6 +92,16 @@ export type AuditLog = {
   targetId: string;
   timestamp: string;
   detail: string;
+};
+
+export type SearchSurface = "home" | "faq" | "ai-guide";
+
+export type SearchLog = {
+  id: string;
+  query: string;
+  surface: SearchSurface;
+  resultCount: number;
+  timestamp: string;
 };
 
 export type SearchResult = {
@@ -107,4 +132,5 @@ export type PortalContentState = {
   announcements: Announcement[];
   quickLinks: QuickLink[];
   auditLogs: AuditLog[];
+  searchLogs: SearchLog[];
 };

@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { useContent } from "@/components/content-provider";
 import { SearchBar } from "@/components/search-bar";
+import { useSearchTelemetry } from "@/components/use-search-telemetry";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
@@ -26,6 +28,7 @@ export function FAQSearchClient({
 
   const results = useMemo(() => searchFaqs(content, { query, categoryId, role }), [categoryId, content, query, role]);
   const displayFaqs: FAQ[] = query || categoryId ? results : listVisibleFaqs(content, role);
+  useSearchTelemetry({ query, surface: "faq", resultCount: results.length });
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -68,7 +71,13 @@ export function FAQSearchClient({
         })}
         {displayFaqs.length === 0 ? (
           <Card>
-            <CardContent className="text-xs text-slate-600 sm:text-sm">条件に一致する FAQ が見つかりませんでした。</CardContent>
+            <CardContent className="space-y-3 text-xs text-slate-600 sm:text-sm">
+              <p>条件に一致する FAQ が見つかりませんでした。</p>
+              <div className="flex flex-wrap gap-2">
+                <Link href="/categories" className="font-medium text-teal-700 underline underline-offset-4">カテゴリから確認する</Link>
+                <Link href="/ai-guide" className="font-medium text-teal-700 underline underline-offset-4">AI案内で関連候補を見る</Link>
+              </div>
+            </CardContent>
           </Card>
         ) : null}
       </div>

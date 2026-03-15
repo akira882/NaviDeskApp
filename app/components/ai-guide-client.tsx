@@ -3,22 +3,51 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { useContent } from "@/components/content-provider";
 import { useRole } from "@/components/role-provider";
 import { SearchBar } from "@/components/search-bar";
+import { useSearchTelemetry } from "@/components/use-search-telemetry";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { categoryRepository } from "@/data/repositories/content-repository";
 import { answerGuide } from "@/lib/ai/guide-service";
+import type { Article, Category, FAQ, SearchLog } from "@/types/domain";
 
-export function AiGuideClient() {
+export function AiGuideClient({
+  categories,
+  preloadedArticles,
+  preloadedFaqs,
+  searchLogs
+}: {
+  categories: Category[];
+  preloadedArticles: Article[];
+  preloadedFaqs: FAQ[];
+  searchLogs: SearchLog[];
+}) {
   const { role } = useRole();
-  const content = useContent();
   const [question, setQuestion] = useState("");
-  const result = useMemo(
-    () => answerGuide({ question, role, state: content, categories: categoryRepository.list() }),
-    [content, question, role]
+
+  // Create minimal state object from props for AI guide service
+  const contentForAI = useMemo(
+    () => ({
+      articles: preloadedArticles,
+      faqs: preloadedFaqs,
+      searchLogs,
+      announcements: [],
+      quickLinks: [],
+      auditLogs: []
+    }),
+    [preloadedArticles, preloadedFaqs, searchLogs]
   );
+
+  const result = useMemo(
+    () => answerGuide({ question, role, state: contentForAI, categories }),
+    [categories, contentForAI, question, role]
+  );
+
+  useSearchTelemetry({
+    query: question,
+    surface: "ai-guide",
+    resultCount: result.mode === "answer" ? result.citations.length : result.suggestions.length
+  });
 
   return (
     <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
