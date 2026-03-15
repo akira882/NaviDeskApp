@@ -354,6 +354,7 @@ npm run build
 ## 運用ドキュメント
 
 - [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+- [docs/CLAUDE_CODEX_SUBAGENT_WORKFLOW.md](./docs/CLAUDE_CODEX_SUBAGENT_WORKFLOW.md)
 - [docs/OPERATIONS.md](./docs/OPERATIONS.md)
 - [docs/REQUIREMENTS.md](./docs/REQUIREMENTS.md)
 - [docs/SECURITY.md](./docs/SECURITY.md)
