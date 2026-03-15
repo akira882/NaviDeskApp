@@ -76,6 +76,7 @@ export function FAQSearchClient({
               <div className="flex flex-wrap gap-2">
                 <Link href="/categories" className="font-medium text-teal-700 underline underline-offset-4">カテゴリから確認する</Link>
                 <Link href="/ai-guide" className="font-medium text-teal-700 underline underline-offset-4">AI案内で関連候補を見る</Link>
+                <Link href="/articles/helpdesk-contact" className="font-medium text-teal-700 underline underline-offset-4">ITサポートデスクへ問い合わせ</Link>
               </div>
             </CardContent>
           </Card>

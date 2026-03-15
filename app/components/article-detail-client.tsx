@@ -55,12 +55,26 @@ export function ArticleDetailClient({
             </div>
             <h2 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl lg:text-3xl">{article.title}</h2>
             <p className="rounded-xl bg-surface-muted p-3 text-xs leading-6 text-slate-700 sm:p-4 sm:text-sm sm:leading-7">{article.summary}</p>
-            <div className="space-y-0.5 text-xs text-slate-500 sm:space-y-1 sm:text-sm">
-              <p>最終更新日: {formatDate(article.updatedAt)}</p>
-              <p>更新者: {userNameById[article.updatedBy] ?? "不明"}</p>
-              <p>レビュー日時: {formatDateTime(article.reviewedAt)}</p>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 sm:p-4">
+              <h3 className="mb-2 text-sm font-semibold text-ink">情報鮮度</h3>
+              <div className="space-y-0.5 text-xs text-slate-600 sm:space-y-1 sm:text-sm">
+                <p>最終更新: {formatDate(article.updatedAt)}</p>
+                <p>更新担当: {userNameById[article.updatedBy] ?? "不明"}</p>
+                <p>レビュー承認: {formatDateTime(article.reviewedAt)}</p>
+              </div>
             </div>
             <div className="whitespace-pre-line text-xs leading-7 text-slate-700 sm:text-sm sm:leading-8">{article.content}</div>
+          </CardContent>
+        </Card>
+        <Card className="border-slate-200 bg-slate-50">
+          <CardContent className="space-y-2">
+            <p className="text-sm font-medium text-ink">この記事で解決しない場合</p>
+            <p className="text-xs leading-6 text-slate-600 sm:text-sm">
+              記事の内容だけでは解決できない場合、または追加のサポートが必要な場合は、ITサポートデスクへお問い合わせください。
+            </p>
+            <Link href="/articles/helpdesk-contact" className="inline-block text-sm font-medium text-teal-700 underline underline-offset-4">
+              ITサポートデスクへ問い合わせ
+            </Link>
           </CardContent>
         </Card>
       </article>

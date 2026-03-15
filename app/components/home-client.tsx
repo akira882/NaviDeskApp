@@ -97,6 +97,7 @@ export function HomeClient({ categories }: { categories: Category[] }) {
                       <Link href="/tasks" className="text-sm font-medium text-teal-700 underline underline-offset-4">タスクハブを見る</Link>
                       <Link href="/categories" className="text-sm font-medium text-teal-700 underline underline-offset-4">カテゴリから探す</Link>
                       <Link href="/ai-guide" className="text-sm font-medium text-teal-700 underline underline-offset-4">AI案内を試す</Link>
+                      <Link href="/articles/helpdesk-contact" className="text-sm font-medium text-teal-700 underline underline-offset-4">ITサポートデスクへ問い合わせ</Link>
                     </div>
                   </div>
                 )
@@ -130,8 +131,8 @@ export function HomeClient({ categories }: { categories: Category[] }) {
         <Card>
           <CardContent className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-ink sm:text-lg">最近更新された重要情報</h2>
-              <Badge className="bg-slate-50 text-xs">運用優先</Badge>
+              <h2 className="text-base font-semibold text-ink sm:text-lg">よく見られている記事</h2>
+              <Badge className="bg-teal-50 text-xs text-teal-700">人気</Badge>
             </div>
             <div className="space-y-2.5 sm:space-y-3">
               {recentArticles.map((article) => (

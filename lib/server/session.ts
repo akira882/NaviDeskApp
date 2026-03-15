@@ -1,39 +1,57 @@
 import "server-only";
 
-import { env } from "@/lib/env";
-import { userRepository } from "@/data/repositories/content-repository";
+import { mockAuthProvider } from "@/lib/auth/mock-auth-provider";
+import type { AuthProvider } from "@/lib/auth/auth-provider";
+import type { Role, User } from "@/types/domain";
 
 /**
- * ⚠️ WARNING: MVP IMPLEMENTATION ONLY ⚠️
+ * Current authentication provider
  *
- * This is a mock authentication implementation for development and prototyping.
+ * ⚠️ MVP CONFIGURATION: Using MockAuthProvider
  *
- * CRITICAL LIMITATIONS:
- * 1. Returns the same role for ALL users (from environment variable)
- * 2. No actual user authentication or session management
- * 3. Cannot distinguish between different users
- * 4. NOT SUITABLE FOR PRODUCTION USE
- *
- * PRODUCTION REQUIREMENTS:
- * - Replace with SSO/OIDC integration (NextAuth.js, Auth0, Okta, etc.)
- * - Implement user-level session management
- * - Extract role from authenticated user's claims/groups
- * - Add CSRF protection and secure cookie handling
+ * To enable production SSO/OIDC:
+ * 1. Implement SSOAuthProvider (see lib/auth/sso-auth-provider.ts)
+ * 2. Replace mockAuthProvider with ssoAuthProvider
+ * 3. Update environment configuration
  *
  * See docs/PRODUCTION_ROADMAP.md Phase 1 for migration plan.
- *
- * @returns The fixed role from environment variable (NOT user-specific)
  */
-export function getSessionRole() {
-  return env.NAVIDESK_SESSION_ROLE;
+const authProvider: AuthProvider = mockAuthProvider;
+
+/**
+ * Get the current session role
+ *
+ * ⚠️ MVP IMPLEMENTATION: Returns fixed role from environment variable
+ *
+ * In production, this will return the authenticated user's role from SSO/OIDC session.
+ *
+ * @returns The current user's role
+ */
+export function getSessionRole(): Role {
+  const userOrPromise = authProvider.getCurrentUser();
+  // MockAuthProvider returns User synchronously; future SSO providers may return Promise<User>
+  // For MVP, we expect synchronous User. Production SSO migration will require async handling.
+  const user: User = userOrPromise instanceof Promise
+    ? (() => { throw new Error("Unexpected async auth provider. SSO migration required."); })()
+    : userOrPromise;
+  return user.role;
 }
 
 /**
- * ⚠️ WARNING: MVP IMPLEMENTATION ONLY ⚠️
+ * Get the current session user
  *
- * This returns a mock user based on the environment role, not an actual authenticated user.
- * In production, this should return the authenticated user from the session.
+ * ⚠️ MVP IMPLEMENTATION: Returns mock user based on environment role
+ *
+ * In production, this will return the authenticated user from SSO/OIDC session.
+ *
+ * @returns The current authenticated user
  */
-export function getSessionUser() {
-  return userRepository.getCurrentUser(getSessionRole());
+export function getSessionUser(): User {
+  const userOrPromise = authProvider.getCurrentUser();
+  // MockAuthProvider returns User synchronously; future SSO providers may return Promise<User>
+  // For MVP, we expect synchronous User. Production SSO migration will require async handling.
+  const user: User = userOrPromise instanceof Promise
+    ? (() => { throw new Error("Unexpected async auth provider. SSO migration required."); })()
+    : userOrPromise;
+  return user;
 }
