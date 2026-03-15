@@ -2,7 +2,7 @@
 
 import type { Route } from "next";
 import Link from "next/link";
-import { LayoutDashboard, MessageSquareText, Newspaper, Search, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, ListChecks, MessageSquareText, Newspaper, Search, ShieldCheck } from "lucide-react";
 
 import { getRoleLabel } from "@/lib/roles";
 import { useRole } from "@/components/role-provider";
@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 
 const navItems: Array<{ href: Route; label: string; icon: typeof Search }> = [
   { href: "/", label: "ホーム", icon: Search },
+  { href: "/tasks", label: "タスクハブ", icon: ListChecks },
   { href: "/ai-guide", label: "AI案内", icon: Search },
   { href: "/categories", label: "カテゴリ", icon: LayoutDashboard },
   { href: "/faq", label: "FAQ検索", icon: MessageSquareText },
@@ -28,7 +29,7 @@ export function SiteHeader() {
             <Link href="/" className="text-lg font-semibold tracking-tight text-ink sm:text-xl">
               NaviDeskApp
             </Link>
-            <p className="hidden text-sm text-slate-500 sm:block">Enterprise knowledge operations portal for internal teams</p>
+            <p className="hidden text-sm text-slate-500 sm:block">社内業務のためのナレッジ運用ポータル</p>
           </div>
           <div className="flex items-center gap-2 lg:hidden">
             <span className="text-xs text-slate-500">ロール</span>

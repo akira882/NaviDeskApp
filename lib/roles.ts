@@ -19,6 +19,10 @@ export function canViewAuditLog(role: Role) {
   return role === "admin";
 }
 
+export function canApproveContent(role: Role) {
+  return role === "admin";
+}
+
 export function getRoleLabel(role: Role) {
   return (
     {

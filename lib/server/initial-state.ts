@@ -5,23 +5,29 @@ import {
   articles,
   auditLogs,
   faqs,
-  quickLinks
+  quickLinks,
+  searchLogs
 } from "@/data/mock/seed";
 import { canAccess, canManageContent, canViewAuditLog } from "@/lib/roles";
 import { createInitialPortalState } from "@/lib/content-helpers";
 import type { PortalContentState, Role } from "@/types/domain";
 
+function isApprovedForReaders(status: { status: "draft" | "published"; approvalStatus: "not_requested" | "pending" | "approved" | "changes_requested" }) {
+  return status.status === "published" && status.approvalStatus === "approved";
+}
+
 function filterStateForReader(role: Role): PortalContentState {
   return createInitialPortalState({
     articles: articles.filter(
-      (article) => article.status === "published" && canAccess(role, article.visibilityRole)
+      (article) => isApprovedForReaders(article) && canAccess(role, article.visibilityRole)
     ),
     faqs: faqs.filter(
-      (faq) => faq.status === "published" && canAccess(role, faq.visibilityRole)
+      (faq) => isApprovedForReaders(faq) && canAccess(role, faq.visibilityRole)
     ),
-    announcements: announcements.filter((announcement) => announcement.status === "published"),
+    announcements: announcements.filter((announcement) => isApprovedForReaders(announcement)),
     quickLinks,
-    auditLogs: canViewAuditLog(role) ? auditLogs : []
+    auditLogs: canViewAuditLog(role) ? auditLogs : [],
+    searchLogs
   });
 }
 
@@ -32,7 +38,8 @@ export function buildInitialStateForRole(role: Role): PortalContentState {
       faqs,
       announcements,
       quickLinks,
-      auditLogs: canViewAuditLog(role) ? auditLogs : []
+      auditLogs: canViewAuditLog(role) ? auditLogs : [],
+      searchLogs
     });
   }
 

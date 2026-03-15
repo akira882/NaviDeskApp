@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
 import { ContentProvider, useContent } from "@/app/components/content-provider";
-import { announcements, articles, auditLogs, faqs, quickLinks } from "@/data/mock/seed";
+import { announcements, articles, auditLogs, faqs, quickLinks, searchLogs } from "@/data/mock/seed";
 import { createInitialPortalState } from "@/lib/content-helpers";
 
 const initialState = createInitialPortalState({
@@ -11,8 +11,16 @@ const initialState = createInitialPortalState({
   faqs,
   announcements,
   quickLinks,
-  auditLogs
+  auditLogs,
+  searchLogs
 });
+
+const actorIdByRole = {
+  employee: "u-emp",
+  manager: "u-mgr",
+  editor: "u-edt",
+  admin: "u-adm"
+} as const;
 
 function Harness() {
   const content = useContent();
@@ -46,6 +54,12 @@ function Harness() {
       <button type="button" onClick={() => content.deleteQuickLink("ql-4", "editor")}>
         delete quicklink
       </button>
+      <button type="button" onClick={() => content.requestArticleReview("art-attendance-fix", "editor")}>
+        request article review
+      </button>
+      <button type="button" onClick={() => content.approveArticle("art-attendance-fix", "承認", "admin")}>
+        approve article
+      </button>
       <button
         type="button"
         onClick={() =>
@@ -55,7 +69,7 @@ function Harness() {
               body: "本文",
               status: "published"
             },
-            "editor"
+            "admin"
           )
         }
       >
@@ -64,6 +78,9 @@ function Harness() {
       <p data-testid="article-count">{content.articles.length}</p>
       <p data-testid="paid-leave-status">
         {content.articles.find((article) => article.id === "art-paid-leave")?.status}
+      </p>
+      <p data-testid="attendance-approval">
+        {content.articles.find((article) => article.id === "art-attendance-fix")?.approvalStatus}
       </p>
       <p data-testid="quicklink-exists">
         {String(content.quickLinks.some((quickLink) => quickLink.id === "ql-4"))}
@@ -81,7 +98,7 @@ describe("ContentProvider", () => {
     const user = userEvent.setup();
 
     render(
-      <ContentProvider initialState={initialState}>
+      <ContentProvider initialState={initialState} actorIdByRole={actorIdByRole}>
         <Harness />
       </ContentProvider>
     );
@@ -95,11 +112,17 @@ describe("ContentProvider", () => {
     await user.click(screen.getByRole("button", { name: "toggle article" }));
     expect(screen.getByTestId("paid-leave-status")).toHaveTextContent("draft");
 
+    await user.click(screen.getByRole("button", { name: "request article review" }));
+    expect(screen.getByTestId("attendance-approval")).toHaveTextContent("pending");
+
+    await user.click(screen.getByRole("button", { name: "approve article" }));
+    expect(screen.getByTestId("attendance-approval")).toHaveTextContent("approved");
+
     await user.click(screen.getByRole("button", { name: "delete quicklink" }));
     expect(screen.getByTestId("quicklink-exists")).toHaveTextContent("false");
 
     await user.click(screen.getByRole("button", { name: "add announcement" }));
     expect(screen.getByTestId("latest-announcement-published-at")).toHaveTextContent("set");
-    expect(Number(screen.getByTestId("audit-count").textContent)).toBe(initialAuditCount + 4);
+    expect(Number(screen.getByTestId("audit-count").textContent)).toBe(initialAuditCount + 6);
   });
 });

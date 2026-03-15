@@ -2,6 +2,7 @@ import type { Route } from "next";
 import { canAccess } from "@/lib/roles";
 import { scoreText } from "@/lib/utils";
 import type {
+  ApprovalStatus,
   Announcement,
   AuditAction,
   AuditLog,
@@ -9,9 +10,14 @@ import type {
   PortalContentState,
   QuickLink,
   Role,
+  SearchLog,
   SearchResult,
   User
 } from "@/types/domain";
+
+function isApprovedForReaders(status: { status: "draft" | "published"; approvalStatus: ApprovalStatus }) {
+  return status.status === "published" && status.approvalStatus === "approved";
+}
 
 export function createInitialPortalState(seed: PortalContentState): PortalContentState {
   return {
@@ -19,23 +25,30 @@ export function createInitialPortalState(seed: PortalContentState): PortalConten
     faqs: [...seed.faqs],
     announcements: [...seed.announcements],
     quickLinks: [...seed.quickLinks],
-    auditLogs: [...seed.auditLogs]
+    auditLogs: [...seed.auditLogs],
+    searchLogs: [...seed.searchLogs]
   };
 }
 
 export function listVisibleArticles(state: PortalContentState, role: Role) {
   return state.articles.filter(
-    (article) => article.status === "published" && canAccess(role, article.visibilityRole)
+    (article) => isApprovedForReaders(article) && canAccess(role, article.visibilityRole)
   );
 }
 
+export function listRecentVisibleArticles(state: PortalContentState, role: Role, limit = 4) {
+  return [...listVisibleArticles(state, role)]
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .slice(0, limit);
+}
+
 export function listVisibleFaqs(state: PortalContentState, role: Role) {
-  return state.faqs.filter((faq) => faq.status === "published" && canAccess(role, faq.visibilityRole));
+  return state.faqs.filter((faq) => isApprovedForReaders(faq) && canAccess(role, faq.visibilityRole));
 }
 
 export function listPublishedAnnouncements(state: PortalContentState): Announcement[] {
   return [...state.announcements]
-    .filter((announcement) => announcement.status === "published")
+    .filter((announcement) => isApprovedForReaders(announcement))
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
 }
 
@@ -117,4 +130,47 @@ export function buildAuditLog(params: {
 
 export function resolveActorId(users: User[], role: Role) {
   return users.find((user) => user.role === role)?.id ?? users[0]?.id ?? "u-system";
+}
+
+export function createSearchLog(params: {
+  query: string;
+  surface: SearchLog["surface"];
+  resultCount: number;
+}): SearchLog {
+  return {
+    id: `search-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    query: params.query.trim(),
+    surface: params.surface,
+    resultCount: params.resultCount,
+    timestamp: new Date().toISOString()
+  };
+}
+
+export function listFailedSearchThemes(searchLogs: SearchLog[]) {
+  const failedLogs = searchLogs.filter((log) => log.resultCount === 0 && log.query.trim().length >= 2);
+  const counts = new Map<string, { query: string; count: number; lastSearchedAt: string; surface: SearchLog["surface"] }>();
+
+  failedLogs.forEach((log) => {
+    const key = log.query.trim().toLowerCase();
+    const current = counts.get(key);
+
+    if (!current) {
+      counts.set(key, {
+        query: log.query.trim(),
+        count: 1,
+        lastSearchedAt: log.timestamp,
+        surface: log.surface
+      });
+      return;
+    }
+
+    counts.set(key, {
+      query: current.query,
+      count: current.count + 1,
+      lastSearchedAt: current.lastSearchedAt > log.timestamp ? current.lastSearchedAt : log.timestamp,
+      surface: current.lastSearchedAt > log.timestamp ? current.surface : log.surface
+    });
+  });
+
+  return [...counts.values()].sort((a, b) => b.count - a.count || b.lastSearchedAt.localeCompare(a.lastSearchedAt));
 }

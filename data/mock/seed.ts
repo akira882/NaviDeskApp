@@ -5,8 +5,38 @@ import type {
   Category,
   FAQ,
   QuickLink,
+  SearchLog,
   User
 } from "@/types/domain";
+import { listSeedQuickLinks } from "@/lib/quick-link-catalog";
+
+type ApprovalSeedFields = Pick<Article, "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy">;
+
+function withSeedApproval<T extends { status: "draft" | "published" }>(
+  item: T,
+  overrides: Partial<ApprovalSeedFields> = {}
+): T & ApprovalSeedFields {
+  const defaults: ApprovalSeedFields =
+    item.status === "published"
+      ? {
+          approvalStatus: "approved",
+          reviewComment: "初期公開済みコンテンツ",
+          reviewedAt: "2026-02-01T09:00:00+09:00",
+          reviewedBy: "u-adm"
+        }
+      : {
+          approvalStatus: "not_requested",
+          reviewComment: null,
+          reviewedAt: null,
+          reviewedBy: null
+        };
+
+  return {
+    ...item,
+    ...defaults,
+    ...overrides
+  };
+}
 
 export const users: User[] = [
   { id: "u-emp", name: "佐藤 美咲", department: "営業部", role: "employee" },
@@ -24,7 +54,7 @@ export const categories: Category[] = [
   { id: "cat-benefit", slug: "benefits", name: "福利厚生", description: "補助制度、健康支援、社内制度の利用案内", ownerDepartment: "人事部" }
 ];
 
-export const articles: Article[] = [
+const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy">> = [
   {
     id: "art-paid-leave",
     title: "有休申請の手順",
@@ -302,7 +332,9 @@ export const articles: Article[] = [
   }
 ];
 
-export const faqs: FAQ[] = [
+export const articles: Article[] = articleSeed.map((article) => withSeedApproval(article));
+
+const faqSeed: Array<Omit<FAQ, "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy">> = [
   {
     id: "faq-vpn",
     question: "VPNに接続できない場合、最初に何を確認すべきですか？",
@@ -349,7 +381,11 @@ export const faqs: FAQ[] = [
   }
 ];
 
-export const announcements: Announcement[] = [
+export const faqs: FAQ[] = faqSeed.map((faq) => withSeedApproval(faq));
+
+const announcementSeed: Array<
+  Omit<Announcement, "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy">
+> = [
   {
     id: "ann-1",
     title: "勤怠締め時刻のリマインド",
@@ -379,12 +415,9 @@ export const announcements: Announcement[] = [
   }
 ];
 
-export const quickLinks: QuickLink[] = [
-  { id: "ql-1", label: "勤怠システム", url: "https://example.internal/time", categoryId: "cat-work", description: "打刻、有休、勤怠修正申請", sortOrder: 1 },
-  { id: "ql-2", label: "ITサポートポータル", url: "https://example.internal/helpdesk", categoryId: "cat-it", description: "PC・アカウント・障害問い合わせ", sortOrder: 2 },
-  { id: "ql-3", label: "福利厚生ポータル", url: "https://example.internal/benefits", categoryId: "cat-benefit", description: "制度検索と申請状況確認", sortOrder: 3 },
-  { id: "ql-4", label: "各種申請ワークフロー", url: "https://example.internal/workflow", categoryId: "cat-app", description: "証明書、稟議、出張などの申請", sortOrder: 4 }
-];
+export const announcements: Announcement[] = announcementSeed.map((announcement) => withSeedApproval(announcement));
+
+export const quickLinks: QuickLink[] = listSeedQuickLinks();
 
 export const auditLogs: AuditLog[] = [
   {
@@ -413,5 +446,29 @@ export const auditLogs: AuditLog[] = [
     targetId: "faq-manager",
     timestamp: "2026-02-25T10:10:00+09:00",
     detail: "管理職向け FAQ を追加"
+  }
+];
+
+export const searchLogs: SearchLog[] = [
+  {
+    id: "search-1",
+    query: "VPN 接続 エラー",
+    surface: "home",
+    resultCount: 2,
+    timestamp: "2026-03-12T09:10:00+09:00"
+  },
+  {
+    id: "search-2",
+    query: "交通費 精算できない",
+    surface: "faq",
+    resultCount: 0,
+    timestamp: "2026-03-13T11:40:00+09:00"
+  },
+  {
+    id: "search-3",
+    query: "住所変更 手続き",
+    surface: "home",
+    resultCount: 0,
+    timestamp: "2026-03-13T15:20:00+09:00"
   }
 ];

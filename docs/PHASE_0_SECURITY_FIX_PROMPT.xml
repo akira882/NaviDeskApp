@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enterprise_project>
+  <metadata>
+    <project_name>NaviDeskApp Enterprise Dream Team Development</project_name>
+    <phase>Phase 0: Emergency Security Remediation</phase>
+    <duration>1 Week</duration>
+    <team_size>55 Professionals</team_size>
+    <priority>CRITICAL</priority>
+  </metadata>
+
+  <context>
+    <current_state>
+      <status>MVP/Prototype Stage</status>
+      <build_status>
+        <lint>PASS</lint>
+        <test>PASS (74 tests)</test>
+        <build>PASS</build>
+      </build_status>
+      <critical_issues>
+        <issue priority="P0">
+          <title>Client/Server Boundary Violation</title>
+          <description>Client components directly import content-repository, exposing protected seed data in client bundle</description>
+          <impact>Manager-only articles and user list readable via bundle analysis by employee role users</impact>
+          <affected_files>
+            <file>app/components/article-detail-client.tsx:9</file>
+            <file>app/components/category-detail-client.tsx:6</file>
+            <file>app/components/ai-guide-client.tsx:12</file>
+            <file>app/components/audit-log-table.tsx:11</file>
+            <file>app/components/content-governance-card.tsx:5</file>
+            <file>app/components/task-hub-client.tsx:10</file>
+          </affected_files>
+        </issue>
+        <issue priority="P0">
+          <title>ContentProvider Lacks Authorization Checks</title>
+          <description>add/update/delete mutations do not check canManageContent, relying only on UI gates</description>
+          <impact>Provider contract can be easily broken by future implementations</impact>
+          <affected_component>app/components/content-provider.tsx</affected_component>
+        </issue>
+        <issue priority="P1">
+          <title>Restricted Article Navigation Exposure</title>
+          <description>Manager-only articles exposed in task hubs and quick links to all roles</description>
+          <impact>Information architecture inconsistency, employee users see manager-only article existence</impact>
+          <affected_files>
+            <file>lib/task-hubs.ts:47-55</file>
+            <file>lib/quick-link-catalog.ts:124-127</file>
+          </affected_files>
+        </issue>
+      </critical_issues>
+    </current_state>
+
+    <references>
+      <document>README.md - Product intent and operational principles</document>
+      <document>docs/SECURITY.md - Non-negotiable security rules</document>
+      <document>docs/CODEX_SUBAGENT_PROPOSAL_2026-03-15.md - Detailed security analysis</document>
+      <document>docs/DREAM_TEAM_ENTERPRISE_PROJECT.md - Full project roadmap</document>
+      <document>CLAUDE.md - Development guidelines and constraints</document>
+    </references>
+  </context>
+
+  <dream_team>
+    <phase_0_team>
+      <leadership>
+        <role name="Security Architect" responsibility="Overall security boundary design and verification"/>
+        <role name="Chief Test Engineer" responsibility="Ensure lint/test/build gates remain passing"/>
+        <role name="Frontend Architect" responsibility="Server/client component separation strategy"/>
+      </leadership>
+
+      <security_team>
+        <role name="Security Engineer 1" responsibility="Client bundle analysis and repository import elimination"/>
+        <role name="Security Engineer 2" responsibility="Authorization hardening in ContentProvider"/>
+        <role name="Penetration Tester" responsibility="Bundle inspection for unauthorized content leakage"/>
+      </security_team>
+
+      <frontend_team>
+        <role name="Senior Frontend Engineer 1" responsibility="Refactor client components to use server-resolved props"/>
+        <role name="Senior Frontend Engineer 2" responsibility="Implement role-aware navigation filtering"/>
+        <role name="UI/UX Engineer" responsibility="Ensure UI consistency after security fixes"/>
+      </frontend_team>
+
+      <qa_team>
+        <role name="QA Lead" responsibility="Test plan for all role scenarios"/>
+        <role name="Senior QA Engineer" responsibility="E2E testing across all roles"/>
+        <role name="Test Automation Engineer" responsibility="Automated bundle analysis tests"/>
+      </qa_team>
+    </phase_0_team>
+  </dream_team>
+
+  <phase_0_objectives>
+    <objective id="1" priority="P0">
+      <title>Eliminate Client Repository Imports</title>
+      <description>Remove all direct imports of data/repositories/content-repository from client components</description>
+      <tasks>
+        <task>Identify all client components importing content-repository</task>
+        <task>Create server components or use existing ones to resolve data</task>
+        <task>Pass only serializable DTOs via props to client components</task>
+        <task>Add 'server-only' package to enforce boundary</task>
+        <task>Verify bundle no longer contains unauthorized content</task>
+      </tasks>
+      <success_criteria>
+        <criterion>Zero client component imports from data/repositories/*</criterion>
+        <criterion>Bundle analysis shows no manager-only article content for employee build</criterion>
+        <criterion>Bundle analysis shows no internal user list</criterion>
+      </success_criteria>
+    </objective>
+
+    <objective id="2" priority="P0">
+      <title>Harden ContentProvider Authorization</title>
+      <description>Add canManageContent/canApproveContent checks to all mutations</description>
+      <tasks>
+        <task>Audit all mutation functions in ContentProvider</task>
+        <task>Add canManageContent check to create/update/delete/request-review operations</task>
+        <task>Add canApproveContent check to approve/reject/publish-toggle operations</task>
+        <task>Implement proper error handling for authorization failures</task>
+        <task>Add tests for unauthorized mutation attempts</task>
+      </tasks>
+      <success_criteria>
+        <criterion>100% of mutations have authorization checks</criterion>
+        <criterion>Tests verify employee role cannot execute editor operations</criterion>
+        <criterion>Tests verify editor role cannot execute admin operations</criterion>
+      </success_criteria>
+    </objective>
+
+    <objective id="3" priority="P1">
+      <title>Implement Role-Aware Navigation</title>
+      <description>Filter task hub and quick link resources based on user role</description>
+      <tasks>
+        <task>Refactor getTaskHubs to accept role parameter</task>
+        <task>Refactor getQuickLinkGuide to accept role parameter</task>
+        <task>Filter article references based on visibilityRole</task>
+        <task>Update all call sites to pass current role</task>
+        <task>Add tests for role-filtered navigation</task>
+      </tasks>
+      <success_criteria>
+        <criterion>Employee role does not see manager-only article links</criterion>
+        <criterion>Task hubs show only accessible resources</criterion>
+        <criterion>Quick links show only accessible resources</criterion>
+      </success_criteria>
+    </objective>
+
+    <objective id="4" priority="P2">
+      <title>Verification and Documentation</title>
+      <description>Ensure all changes pass release gates and update documentation</description>
+      <tasks>
+        <task>Run npm run lint - must pass</task>
+        <task>Run npm run test - must pass with new security tests</task>
+        <task>Run npm run build - must pass</task>
+        <task>Bundle analysis for all role scenarios</task>
+        <task>E2E test for all role scenarios</task>
+        <task>Update SECURITY.md with implemented controls</task>
+        <task>Update ARCHITECTURE.md with new server/client boundaries</task>
+      </tasks>
+      <success_criteria>
+        <criterion>All release gates passing</criterion>
+        <criterion>Documentation reflects current security posture</criterion>
+        <criterion>No regression in existing functionality</criterion>
+      </success_criteria>
+    </objective>
+  </phase_0_objectives>
+
+  <implementation_strategy>
+    <phase name="Day 1-2: Analysis and Design">
+      <activities>
+        <activity team="Security Team">Comprehensive bundle analysis and security audit</activity>
+        <activity team="Frontend Team">Design server component wrapper strategy</activity>
+        <activity team="QA Team">Create test plan and scenarios</activity>
+      </activities>
+    </phase>
+
+    <phase name="Day 3-4: Implementation">
+      <activities>
+        <activity team="Frontend Team">Refactor client components to remove repository imports</activity>
+        <activity team="Security Team">Add authorization checks to ContentProvider</activity>
+        <activity team="Frontend Team">Implement role-aware navigation filtering</activity>
+      </activities>
+    </phase>
+
+    <phase name="Day 5: Testing">
+      <activities>
+        <activity team="QA Team">Execute E2E tests for all roles</activity>
+        <activity team="Security Team">Bundle analysis verification</activity>
+        <activity team="Test Automation">Automated security tests</activity>
+      </activities>
+    </phase>
+
+    <phase name="Day 6-7: Documentation and Sign-off">
+      <activities>
+        <activity team="Documentation Team">Update all technical documentation</activity>
+        <activity team="Security Architect">Final security review</activity>
+        <activity team="Chief Test Engineer">Release gate verification</activity>
+        <activity team="CISO">Security sign-off</activity>
+      </activities>
+    </phase>
+  </implementation_strategy>
+
+  <constraints>
+    <constraint type="security">
+      <rule>Do not ship confidential documents in static client bundles for unauthorized roles</rule>
+      <source>docs/SECURITY.md</source>
+    </constraint>
+    <constraint type="security">
+      <rule>unauthorized content must not be sent to browser at initial render time</rule>
+      <source>README.md</source>
+    </constraint>
+    <constraint type="maintainability">
+      <rule>Do not break existing responsibility separation</rule>
+      <source>CLAUDE.md</source>
+    </constraint>
+    <constraint type="quality">
+      <rule>All changes must pass lint, test, and build gates</rule>
+      <source>CLAUDE.md</source>
+    </constraint>
+    <constraint type="implementation">
+      <rule>Prefer explicit, maintainable code over large abstractions</rule>
+      <source>CLAUDE.md</source>
+    </constraint>
+  </constraints>
+
+  <verification_checklist>
+    <check category="Build Gates">
+      <item>npm run lint passes with zero warnings</item>
+      <item>npm run test passes all 74+ tests</item>
+      <item>npm run build completes successfully</item>
+    </check>
+    <check category="Security">
+      <item>No client component imports from data/repositories/*</item>
+      <item>Bundle analysis shows no manager article content for employee</item>
+      <item>Bundle analysis shows no user list in any bundle</item>
+      <item>All ContentProvider mutations have authorization checks</item>
+    </check>
+    <check category="Functionality">
+      <item>Employee role can access employee-visible content</item>
+      <item>Manager role can access both employee and manager content</item>
+      <item>Editor role can manage content</item>
+      <item>Admin role can access audit logs</item>
+      <item>Navigation shows only accessible resources per role</item>
+    </check>
+    <check category="Documentation">
+      <item>SECURITY.md updated with Phase 0 improvements</item>
+      <item>ARCHITECTURE.md reflects server/client boundaries</item>
+      <item>OPERATIONS.md updated if needed</item>
+    </check>
+  </verification_checklist>
+
+  <success_metrics>
+    <metric name="Security Boundary Integrity" target="100%">
+      <measurement>Zero unauthorized content in client bundles</measurement>
+    </metric>
+    <metric name="Authorization Coverage" target="100%">
+      <measurement>All mutations have role checks</measurement>
+    </metric>
+    <metric name="Test Coverage" target="Maintain or Improve">
+      <measurement>All security fixes have corresponding tests</measurement>
+    </metric>
+    <metric name="Zero Regression" target="100%">
+      <measurement>All existing tests continue to pass</measurement>
+    </metric>
+  </success_metrics>
+
+  <execution_command>
+    <instruction>Claude Code CLI should execute Phase 0 with the Dream Team, addressing all P0 and P1 issues in priority order</instruction>
+    <instruction>Start with Objective 1 (Client Repository Import Elimination) as it has the highest security impact</instruction>
+    <instruction>Maintain continuous communication about progress and blockers</instruction>
+    <instruction>Verify each objective's success criteria before moving to next</instruction>
+    <instruction>Do not compromise on security for convenience</instruction>
+  </execution_command>
+</enterprise_project>

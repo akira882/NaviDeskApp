@@ -6,7 +6,8 @@ import {
   auditLogs,
   categories,
   faqs,
-  quickLinks
+  quickLinks,
+  searchLogs
 } from "@/data/mock/seed";
 import { mockGuideProvider } from "@/lib/ai/providers/mock-guide-provider";
 import { createInitialPortalState } from "@/lib/content-helpers";
@@ -16,7 +17,8 @@ const state = createInitialPortalState({
   faqs,
   announcements,
   quickLinks,
-  auditLogs
+  auditLogs,
+  searchLogs
 });
 
 describe("mockGuideProvider", () => {

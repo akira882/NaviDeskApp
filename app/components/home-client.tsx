@@ -6,11 +6,19 @@ import { useMemo, useState } from "react";
 
 import { useContent } from "@/components/content-provider";
 import { SearchBar } from "@/components/search-bar";
+import { useSearchTelemetry } from "@/components/use-search-telemetry";
+import { QuickLinkItem } from "@/components/quick-link-item";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRole } from "@/components/role-provider";
-import { searchContent, listPublishedAnnouncements, listSortedQuickLinks } from "@/lib/content-helpers";
+import {
+  listPublishedAnnouncements,
+  listRecentVisibleArticles,
+  listSortedQuickLinks,
+  searchContent
+} from "@/lib/content-helpers";
+import { listTaskHubsForRole } from "@/lib/task-hubs";
 import { formatDate } from "@/lib/utils";
 import type { Category } from "@/types/domain";
 
@@ -25,10 +33,43 @@ export function HomeClient({ categories }: { categories: Category[] }) {
   );
   const announcements = useMemo(() => listPublishedAnnouncements(content), [content]);
   const quickLinks = useMemo(() => listSortedQuickLinks(content), [content]);
+  const taskHubs = useMemo(() => listTaskHubsForRole(role).slice(0, 3), [role]);
+  const recentArticles = useMemo(() => listRecentVisibleArticles(content, role, 4), [content, role]);
+  useSearchTelemetry({ query, surface: "home", resultCount: results.length });
 
   return (
     <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-[1.4fr_0.9fr]">
       <div className="space-y-4 sm:space-y-6">
+        <Card className="overflow-hidden border-0 bg-gradient-to-br from-teal-600 via-cyan-700 to-ink text-white">
+          <CardContent className="space-y-4 sm:space-y-5">
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-[0.22em] text-teal-100">優先タスク導線</p>
+              <h2 className="text-lg font-semibold sm:text-xl">最重要タスクから業務を開始</h2>
+              <p className="text-sm leading-6 text-cyan-50">
+                重要度と利用頻度が高い業務フローを優先順で整理し、迷わず着手できるようにしています。
+              </p>
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              {taskHubs.map((hub) => (
+                <Link
+                  key={hub.slug}
+                  href="/tasks"
+                  className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur transition hover:bg-white/15"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <Badge className="border-white/20 bg-white/15 text-white">優先度 {hub.priority}</Badge>
+                  </div>
+                  <p className="mt-3 text-base font-semibold">{hub.title}</p>
+                  <p className="mt-2 text-sm leading-6 text-cyan-50">{hub.summary}</p>
+                </Link>
+              ))}
+            </div>
+            <Link href="/tasks" className="inline-flex text-sm font-medium text-white underline underline-offset-4">
+              タスクハブ全体を見る
+            </Link>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="space-y-3 sm:space-y-4">
             <div className="space-y-1.5 sm:space-y-2">
@@ -50,7 +91,14 @@ export function HomeClient({ categories }: { categories: Category[] }) {
                     </Link>
                   ))
                 ) : (
-                  <p className="rounded-xl bg-surface-muted p-4 text-sm text-slate-600">一致する記事または FAQ が見つかりませんでした。</p>
+                  <div className="rounded-xl bg-surface-muted p-4 text-sm text-slate-600">
+                    <p>一致する記事または FAQ が見つかりませんでした。</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Link href="/tasks" className="text-sm font-medium text-teal-700 underline underline-offset-4">タスクハブを見る</Link>
+                      <Link href="/categories" className="text-sm font-medium text-teal-700 underline underline-offset-4">カテゴリから探す</Link>
+                      <Link href="/ai-guide" className="text-sm font-medium text-teal-700 underline underline-offset-4">AI案内を試す</Link>
+                    </div>
+                  </div>
                 )
               ) : (
                 <p className="rounded-xl bg-surface-muted p-4 text-sm text-slate-600">
@@ -82,6 +130,28 @@ export function HomeClient({ categories }: { categories: Category[] }) {
         <Card>
           <CardContent className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-ink sm:text-lg">最近更新された重要情報</h2>
+              <Badge className="bg-slate-50 text-xs">運用優先</Badge>
+            </div>
+            <div className="space-y-2.5 sm:space-y-3">
+              {recentArticles.map((article) => (
+                <Link
+                  key={article.id}
+                  href={`/articles/${article.slug}` as Route}
+                  className="block rounded-xl border border-slate-200 p-3 hover:bg-slate-50 sm:p-4"
+                >
+                  <p className="text-xs text-slate-500">{formatDate(article.updatedAt)}</p>
+                  <p className="mt-1 text-sm font-medium text-ink sm:text-base">{article.title}</p>
+                  <p className="mt-1 text-xs text-slate-600 sm:text-sm">{article.summary}</p>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold text-ink sm:text-lg">お知らせ</h2>
               <Link href="/announcements">
                 <Button variant="ghost" size="sm" className="text-xs sm:text-sm">一覧へ</Button>
@@ -104,16 +174,11 @@ export function HomeClient({ categories }: { categories: Category[] }) {
             <h2 className="text-base font-semibold text-ink sm:text-lg">クイックリンク</h2>
             <div className="space-y-2.5 sm:space-y-3">
               {quickLinks.map((link) => (
-                <a
+                <QuickLinkItem
                   key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
+                  link={link}
                   className="block rounded-xl border border-slate-200 p-3 hover:bg-slate-50 sm:p-4"
-                >
-                  <p className="text-sm font-medium text-ink sm:text-base">{link.label}</p>
-                  <p className="mt-1 text-xs text-slate-600 sm:text-sm">{link.description}</p>
-                </a>
+                />
               ))}
             </div>
           </CardContent>
