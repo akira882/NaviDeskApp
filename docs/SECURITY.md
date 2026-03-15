@@ -1,53 +1,53 @@
-# NaviDeskApp Security
+# NaviDeskApp セキュリティ設計
 
-## Security posture
+## セキュリティ方針
 
-NaviDeskApp is intended for internal confidential operational content. That means convenience patterns acceptable in demos are not acceptable here.
+NaviDeskAppは社内の機密運用コンテンツを扱うことを想定しています。つまり、デモで許容される便利なパターンは、ここでは許容されません。
 
-## Current controls
+## 現在の管理策
 
-- session role is resolved server-side through environment-backed mock session logic
-- role switching is not exposed in the browser
-- initial content payload is filtered server-side by session role before being delivered to the client
-- **client components receive only role-filtered data via props** (Phase 0 improvement)
-- **no direct repository imports in client components** (Phase 0 improvement)
-- **navigation filtering based on visible article slugs** (Phase 0 improvement)
-- audit logs are only included for admin sessions
-- Gemini key is defined as server-side configuration only
-- security response headers are applied globally
-- client-side persistent storage for managed content has been removed
+- セッションロールは、環境変数ベースのモックセッションロジックを通じてサーバーサイドで解決される
+- ロール切替はブラウザに公開されていない
+- 初期コンテンツペイロードは、クライアントに配信される前にサーバーサイドでセッションロール別にフィルタリングされる
+- **クライアントコンポーネントはprops経由でロールフィルタリング済みデータのみを受け取る**（Phase 0 改善）
+- **クライアントコンポーネントでリポジトリを直接インポートしない**（Phase 0 改善）
+- **可視記事slugに基づくナビゲーションフィルタリング**（Phase 0 改善）
+- 監査ログは管理者セッションのみに含まれる
+- Gemini keyはサーバーサイド設定としてのみ定義される
+- セキュリティレスポンスヘッダーはグローバルに適用される
+- 管理コンテンツのクライアントサイド永続ストレージは削除された
 
-## Non-negotiable production rules
+## 本番環境での譲れないルール
 
-- do not ship confidential documents in static client bundles for unauthorized roles
-- do not expose AI provider keys through client-side environment variables
-- do not trust client-side role state for authorization
-- do not allow AI to answer without grounded internal evidence
+- 未承認ロール向けの機密文書を静的クライアントバンドルに含めない
+- AIプロバイダーキーをクライアントサイド環境変数で公開しない
+- 認可のためにクライアントサイドのロール状態を信頼しない
+- 根拠となる社内証拠なしにAIに回答させない
 
-## Phase 0 Security Improvements (2026-03-15)
+## Phase 0 セキュリティ改善（2026年3月15日）
 
-Completed client/server boundary repairs to eliminate unauthorized content leakage:
+未承認コンテンツ漏洩を排除するためのclient/server境界修復を完了:
 
-1. **Eliminated client repository imports**: All client components now receive data via props from server components
-2. **Server-side data filtering**: Articles, FAQs, announcements, and search logs are filtered by role before being passed to client
-3. **Role-aware navigation**: Task hubs and quick link catalogs filter resources based on visible article slugs
-4. **Verified security**: Bundle analysis confirms no manager-only article content or user lists in client bundles
+1. **クライアントリポジトリインポートの排除**: すべてのクライアントコンポーネントは、サーバーコンポーネントからprops経由でデータを受け取る
+2. **サーバーサイドデータフィルタリング**: 記事、FAQ、お知らせ、検索ログはクライアントに渡される前にロール別にフィルタリングされる
+3. **ロール対応ナビゲーション**: タスクハブとクイックリンクカタログは、可視記事slugに基づいてリソースをフィルタリングする
+4. **セキュリティ検証済み**: バンドル解析により、管理職限定記事コンテンツやユーザーリストがクライアントバンドルに含まれないことを確認
 
-### Components Refactored
-- `category-detail-client.tsx` - Now receives visibleArticles and quickLinksForCategory as props
-- `ai-guide-client.tsx` - Now receives preloadedArticles, preloadedFaqs, searchLogs as props
-- `task-hub-client.tsx` - Now receives preloadedArticles and preloadedQuickLinks as props
-- `search-insights-dashboard.tsx` - Now receives articles, faqs, announcements, searchLogs as props
-- `audit-log-table.tsx` - Now receives auditLogs as prop with filtered users
+### リファクタリングされたコンポーネント
+- `category-detail-client.tsx` - visibleArticlesとquickLinksForCategoryをpropsとして受け取る
+- `ai-guide-client.tsx` - preloadedArticles、preloadedFaqs、searchLogsをpropsとして受け取る
+- `task-hub-client.tsx` - preloadedArticlesとpreloadedQuickLinksをpropsとして受け取る
+- `search-insights-dashboard.tsx` - articles、faqs、announcements、searchLogsをpropsとして受け取る
+- `audit-log-table.tsx` - フィルタリング済みユーザー情報を含むauditLogsをpropとして受け取る
 
-### Navigation Functions Enhanced
-- `listTaskHubsForRole()` - Accepts visibleArticleSlugs Set for filtering
-- `findQuickLinkGuideBySlug()` - Accepts visibleArticleSlugs Set for filtering
+### 強化されたナビゲーション関数
+- `listTaskHubsForRole()` - フィルタリング用のvisibleArticleSlugs Setを受け取る
+- `findQuickLinkGuideBySlug()` - フィルタリング用のvisibleArticleSlugs Setを受け取る
 
-## Required next production controls
+## 本番環境で必要な次の管理策
 
-- integrate real authentication and SSO
-- move managed content reads and writes to server-side repositories (partially addressed in Phase 0)
-- use database-backed authorization checks on every sensitive read
-- encrypt secrets through platform-managed secret storage
-- add structured audit trails for authentication, content mutation, and AI usage
+- 実際の認証とSSOを統合する
+- 管理コンテンツの読み取りと書き込みをサーバーサイドリポジトリに移行する（Phase 0で部分的に対応済み）
+- すべての機密読み取りにデータベースバックエンドの認可チェックを使用する
+- プラットフォーム管理のシークレットストレージを通じてシークレットを暗号化する
+- 認証、コンテンツ変更、AI利用の構造化監査証跡を追加する
