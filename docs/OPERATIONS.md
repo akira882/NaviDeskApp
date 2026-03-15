@@ -37,6 +37,18 @@
 9. Verify zero-result searches appear in the search insufficiency panel
 10. Verify audit logs can be filtered by operation, target, and keyword
 
+## Multi-agent workflow
+
+When `Claude Code CLI` is acting as the main agent and `Codex` is acting as a sub-agent:
+
+1. keep the main worktree reserved for planning and review
+2. create a dedicated delegated worktree with `git worktree add`
+3. assign exactly one task and one branch to the sub-agent
+4. require explicit scope, exclusions, verification, and PR metadata
+5. let the sub-agent open the PR only after verification succeeds
+
+Detailed instructions live in [docs/CLAUDE_CODEX_SUBAGENT_WORKFLOW.md](./CLAUDE_CODEX_SUBAGENT_WORKFLOW.md).
+
 ## Production hardening backlog
 
 - replace mock persistence with database-backed repositories
