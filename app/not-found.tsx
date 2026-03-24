@@ -85,7 +85,7 @@ export default function NotFound() {
             className="p-4 rounded-lg border border-line-subtle hover:bg-surface-muted transition-colors"
           >
             <h3 className="text-sm font-medium text-ink mb-1">カテゴリから探す</h3>
-            <p className="text-xs text-ink-soft">人事・情シス・総務など</p>
+            <p className="text-xs text-ink-soft">人事・社内IT企画・総務など</p>
           </Link>
 
           <Link
