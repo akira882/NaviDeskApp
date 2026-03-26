@@ -25,12 +25,10 @@ export function SiteHeader() {
     <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-3 py-3 sm:px-4 sm:py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
         <div className="flex items-center justify-between">
-          <div>
-            <Link href="/" className="text-lg font-semibold tracking-tight text-ink sm:text-xl">
-              NaviDeskApp
-            </Link>
+          <Link href="/" className="block rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700">
+            <p className="text-lg font-semibold tracking-tight text-ink sm:text-xl">NaviDeskApp</p>
             <p className="hidden text-sm text-slate-500 sm:block">社内業務のためのナレッジ運用ポータル</p>
-          </div>
+          </Link>
           <div className="flex items-center gap-2 lg:hidden">
             <span className="text-xs text-slate-500">ロール</span>
             <Badge className="bg-teal-50 text-xs">{getRoleLabel(role)}</Badge>
