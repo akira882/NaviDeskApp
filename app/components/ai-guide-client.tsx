@@ -10,6 +10,15 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AiResponse } from "@/types/domain";
 
+function isAiResponse(value: unknown): value is AiResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return candidate.mode === "answer" || candidate.mode === "fallback";
+}
+
 export function AiGuideClient() {
   const { role } = useRole();
   const [question, setQuestion] = useState("");
@@ -35,15 +44,18 @@ export function AiGuideClient() {
           },
           body: JSON.stringify({ question, role })
         });
+        const payload: unknown = await response.json().catch(() => null);
 
-        if (!response.ok) {
+        if (!response.ok && !isAiResponse(payload)) {
           throw new Error("API request failed");
         }
 
-        const data: AiResponse = await response.json();
+        if (!isAiResponse(payload)) {
+          throw new Error("Invalid AI response");
+        }
 
         if (!cancelled) {
-          setResult(data);
+          setResult(payload);
           setIsLoading(false);
         }
       } catch (error) {

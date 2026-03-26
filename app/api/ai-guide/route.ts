@@ -64,8 +64,7 @@ export async function POST(request: NextRequest) {
         mode: "fallback",
         message: "AI案内の取得中にエラーが発生しました。通常の検索をお試しください。",
         suggestions: []
-      },
-      { status: 500 }
+      }
     );
   }
 }
