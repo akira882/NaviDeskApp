@@ -1,38 +1,38 @@
-# NaviDeskApp Architecture
+# NaviDeskApp アーキテクチャ設計
 
-## Intent
+## 設計意図
 
-NaviDeskApp is designed as an enterprise internal knowledge operations portal. The product priority is controlled information access, operational maintainability, auditability, and future integration with enterprise systems.
+NaviDeskAppは、エンタープライズ社内ナレッジ運用ポータルとして設計されています。製品の優先事項は、制御された情報アクセス、運用保守性、監査性、そして将来のエンタープライズシステムとの統合です。
 
-## Current runtime model
+## 現在のランタイムモデル
 
-- Next.js App Router for application shell and route structure
-- TypeScript for domain integrity
-- Tailwind CSS for consistent UI composition
-- **server-side data filtering with props-based client components** (Phase 0 improvement)
-- **strict server/client boundary enforcement** (Phase 0 improvement)
-- repository layer for baseline master data access (server-only)
-- AI guide service abstraction with provider switch point
+- アプリケーションシェルとルート構造にはNext.js App Routerを使用
+- ドメインの整合性にはTypeScriptを使用
+- 一貫したUI構成にはTailwind CSSを使用
+- **propsベースのクライアントコンポーネントによるサーバーサイドデータフィルタリング**（Phase 0 改善）
+- **厳格なserver/client境界の適用**（Phase 0 改善）
+- 基本マスターデータアクセス用のリポジトリレイヤー（サーバー専用）
+- プロバイダー切替ポイントを持つAIガイドサービス抽象化
 
-## Server/Client Boundary (Phase 0 Implementation)
+## Server/Client境界（Phase 0 実装）
 
-### Server Components Pattern
-Server components handle:
-- Role resolution via `getSessionRole()`
-- Initial state building via `buildInitialStateForRole(role)`
-- Data filtering by role using helper functions
-- Passing only role-visible data as props to client components
+### サーバーコンポーネントパターン
+サーバーコンポーネントが処理する内容:
+- `getSessionRole()`によるロール解決
+- `buildInitialStateForRole(role)`による初期状態構築
+- ヘルパー関数を使用したロール別のデータフィルタリング
+- クライアントコンポーネントにはロールで可視化されたデータのみをpropsとして渡す
 
-### Client Components Pattern
-Client components:
-- Receive filtered data via props (NOT via context for read-only data)
-- Use ContentProvider context ONLY for mutations (recordSearch, add/update/delete operations)
-- Never import from `data/repositories/*` (enforced by build-time errors)
-- Remain lightweight and focused on UI interactions
+### クライアントコンポーネントパターン
+クライアントコンポーネント:
+- props経由でフィルタリング済みデータを受け取る（読み取り専用データにはcontextを使用しない）
+- ContentProviderコンテキストは変更操作のみに使用（recordSearch、add/update/delete操作）
+- `data/repositories/*`からのインポートは行わない（ビルド時エラーで強制）
+- 軽量でUI操作に焦点を当てる
 
-### Example Pattern
+### パターンの例
 
-**Server Component** (`app/categories/[slug]/page.tsx`):
+**サーバーコンポーネント**（`app/categories/[slug]/page.tsx`）:
 ```typescript
 export default async function CategoryDetailPage({ params }) {
   const { slug } = await params;
@@ -54,7 +54,7 @@ export default async function CategoryDetailPage({ params }) {
 }
 ```
 
-**Client Component** (`app/components/category-detail-client.tsx`):
+**クライアントコンポーネント**（`app/components/category-detail-client.tsx`）:
 ```typescript
 export function CategoryDetailClient({
   category,
@@ -65,77 +65,77 @@ export function CategoryDetailClient({
   visibleArticles: Article[];
   quickLinksForCategory: QuickLink[];
 }) {
-  // Uses props - no repository imports, no useContent for reading data
-  return <div>{/* render using props */}</div>;
+  // propsを使用 - リポジトリインポートなし、データ読み取りにuseContentを使用しない
+  return <div>{/* propsを使用してレンダリング */}</div>;
 }
 ```
 
-## Domain boundaries
+## ドメイン境界
 
-## Prioritized information architecture
+## 優先順位付けされた情報アーキテクチャ
 
-The enterprise navigation order is intentionally weighted by operational impact:
+エンタープライズナビゲーションの順序は、運用上の影響を考慮して意図的に重み付けされています:
 
-1. task hubs for high-frequency workflows
-2. global search for known-item retrieval
-3. category navigation for policy browsing
-4. announcements for time-sensitive changes
-5. admin controls for governed mutation flows
+1. 高頻度ワークフローのためのタスクハブ
+2. 既知アイテム検索のためのグローバル検索
+3. ポリシーブラウジングのためのカテゴリナビゲーション
+4. 時間的制約のある変更のためのお知らせ
+5. 統制された変更フローのための管理コントロール
 
-This reduces the most common failure mode in internal portals: users knowing the task they need to complete, but not the department that owns it.
+これにより、社内ポータルで最も一般的な失敗モード、つまりユーザーが完了すべきタスクは知っているが、それを管轄する部署を知らない、という問題を軽減します。
 
-### Read-only master data
+### 読み取り専用マスターデータ
 
-- categories
-- users
+- カテゴリ
+- ユーザー
 
-These are currently served from repository-backed seed data and represent stable reference data.
+これらは現在、リポジトリバックエンドのシードデータから提供され、安定した参照データを表します。
 
-### Managed operational content
+### 管理運用コンテンツ
 
-- articles
-- faqs
-- announcements
-- quick links
-- audit logs
-- search logs
+- 記事
+- FAQ
+- お知らせ
+- クイックリンク
+- 監査ログ
+- 検索ログ
 
-These are managed through the shared content store in the current version so that administrative actions propagate across the product immediately.
+これらは現在のバージョンでは共有コンテンツストアを通じて管理され、管理操作が製品全体に即座に反映されます。
 
-### Governance overlays
+### ガバナンスオーバーレイ
 
-- approval status and review comments on articles, FAQs, and announcements
-- review priority scoring based on content freshness
-- search failure aggregation for missing-content discovery
+- 記事、FAQ、お知らせの承認状態とレビューコメント
+- コンテンツの鮮度に基づくレビュー優先度スコアリング
+- 不足コンテンツ発見のための検索失敗集約
 
-## AI integration boundary
+## AI統合境界
 
-The AI guide is intentionally isolated behind `lib/ai/guide-service.ts`.
+AIガイドは、`lib/ai/guide-service.ts`の背後に意図的に分離されています。
 
-Current provider:
+現在のプロバイダー:
 - `mock`
 
-Planned provider:
+予定されているプロバイダー:
 - `gemini`
 
-The production path is to move AI orchestration fully server-side, query grounded content first, then call Gemini only after relevant internal evidence is retrieved. The browser must never receive the raw Gemini key.
+本番環境へのパスは、AIオーケストレーションを完全にサーバーサイドに移行し、まず根拠となるコンテンツをクエリし、関連する社内証拠が取得された後にのみGeminiを呼び出すことです。ブラウザは生のGemini keyを受け取ってはなりません。
 
-## Enterprise migration path
+## エンタープライズ移行パス
 
 ### Phase 1
 
-- replace localStorage-backed operational state with database persistence
-- route all writes through authenticated server actions or API routes
-- attach user identity from SSO to every mutation
+- localStorageバックエンドの運用状態をデータベース永続化に置き換える
+- すべての書き込みを認証済みサーバーアクションまたはAPIルートを通じてルーティングする
+- すべての変更にSSOからのユーザーIDを付与する
 
 ### Phase 2
 
-- introduce approval flow for high-risk content changes
-- add revision history and rollback
-- add full-text indexing and relevance tuning
+- 高リスクコンテンツ変更の承認フローを導入する
+- リビジョン履歴とロールバックを追加する
+- 全文インデックスと関連性チューニングを追加する
 
 ### Phase 3
 
-- integrate Gemini on the server
-- add citation scoring and answer confidence thresholds
-- record AI request audit trails separately from content operations
+- サーバー上でGeminiを統合する
+- 引用スコアリングと回答信頼度閾値を追加する
+- コンテンツ操作とは別にAIリクエスト監査証跡を記録する

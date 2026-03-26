@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { ContentProvider } from "@/components/content-provider";
 import { RoleProvider } from "@/components/role-provider";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { userRepository } from "@/data/repositories/content-repository";
 import { buildInitialStateForRole } from "@/lib/server/initial-state";
 import { getSessionRole } from "@/lib/server/session";
@@ -30,11 +31,13 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="font-sans">
-        <RoleProvider initialRole={role}>
-          <ContentProvider initialState={initialState} actorIdByRole={actorIdByRole}>
-            {children}
-          </ContentProvider>
-        </RoleProvider>
+        <ErrorBoundary>
+          <RoleProvider initialRole={role}>
+            <ContentProvider initialState={initialState} actorIdByRole={actorIdByRole}>
+              {children}
+            </ContentProvider>
+          </RoleProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

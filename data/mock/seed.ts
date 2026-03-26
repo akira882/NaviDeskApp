@@ -42,12 +42,12 @@ export const users: User[] = [
   { id: "u-emp", name: "佐藤 美咲", department: "営業部", role: "employee" },
   { id: "u-mgr", name: "田中 恒一", department: "営業部", role: "manager" },
   { id: "u-edt", name: "高橋 由奈", department: "コーポレート企画", role: "editor" },
-  { id: "u-adm", name: "中村 翔太", department: "情報システム部", role: "admin" }
+  { id: "u-adm", name: "小清水晶", department: "情報システム部", role: "admin" }
 ];
 
 export const categories: Category[] = [
   { id: "cat-hr", slug: "hr", name: "人事", description: "入退社、休暇、評価、各種申請に関する案内", ownerDepartment: "人事部" },
-  { id: "cat-it", slug: "it", name: "情シス", description: "PC、アカウント、VPN、SaaS 利用に関する案内", ownerDepartment: "情報システム部" },
+  { id: "cat-it", slug: "it", name: "社内IT企画", description: "PC、アカウント、VPN、SaaS 利用に関する案内", ownerDepartment: "情報システム部" },
   { id: "cat-ga", slug: "general-affairs", name: "総務", description: "備品、座席、来客、オフィス利用ルール", ownerDepartment: "総務部" },
   { id: "cat-app", slug: "application", name: "申請・手続き", description: "申請書、稟議、証明書発行などの手続き集約", ownerDepartment: "コーポレート企画" },
   { id: "cat-work", slug: "work-rules", name: "就業ルール", description: "勤怠、在宅勤務、出張、残業ルール", ownerDepartment: "人事部" },

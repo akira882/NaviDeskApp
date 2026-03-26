@@ -1,24 +1,24 @@
-# NaviDeskApp Operations
+# NaviDeskApp 運用指針
 
-## Operational principles
+## 運用の基本原則
 
-- internal content is the system of truth for answers
-- AI may summarize or rank evidence, but must not invent policy
-- every administrative content mutation must be attributable
-- role-based visibility must be enforced consistently
+- 社内コンテンツは回答の信頼できる情報源である
+- AIは根拠を要約またはランク付けできるが、制度を創作してはならない
+- すべての管理的なコンテンツ変更は追跡可能でなければならない
+- ロールベースの可視性制御は一貫して適用されなければならない
 
-## Dream team responsibilities
+## ドリームチームの責任範囲
 
-- Chief Test Engineer owns `npm run lint`, `npm run test`, and `npm run build` as release gates
-- Security Architect reviews client/server boundaries before shipping role or AI changes
-- Knowledge Operations Lead reviews information architecture when categories, search, or content flows change
+- **Chief Test Engineer**: `npm run lint`、`npm run test`、`npm run build` をリリースゲートとして管理
+- **Security Architect**: ロールやAI関連の変更を本番環境に反映する前に、client/server境界をレビュー
+- **Knowledge Operations Lead**: カテゴリ、検索、コンテンツフローに変更がある場合、情報アーキテクチャをレビュー
 
-## Release checklist
+## リリースチェックリスト
 
-1. Run `npm run lint`
-2. Run `npm run test`
-3. Run `npm run build`
-4. Verify key routes:
+1. `npm run lint` を実行
+2. `npm run test` を実行
+3. `npm run build` を実行
+4. 主要ルートの動作確認:
    - `/`
    - `/categories`
    - `/faq`
@@ -26,22 +26,22 @@
    - `/admin`
    - `/admin/audit-log`
    - `/admin/search-insights`
-5. Verify role-specific visibility:
+5. ロール別の可視性確認:
    - `employee`
    - `manager`
    - `editor`
    - `admin`
-6. Verify administrative mutations update audit logs
-7. Verify pending approval items can be approved or rejected with review comments
-8. Verify stale content appears in the review priority queue
-9. Verify zero-result searches appear in the search insufficiency panel
-10. Verify audit logs can be filtered by operation, target, and keyword
+6. 管理操作による監査ログ更新の確認
+7. 承認待ちアイテムが承認または差し戻しできることを確認（レビューコメント付き）
+8. 古いコンテンツがレビュー優先キューに表示されることを確認
+9. 検索結果ゼロのクエリが検索不足パネルに表示されることを確認
+10. 監査ログが操作、対象、キーワードでフィルタリングできることを確認
 
-## Production hardening backlog
+## 本番環境への強化バックログ
 
-- replace mock persistence with database-backed repositories
-- enforce authentication and SSO-backed role resolution
-- move all management writes to server-side mutation endpoints
-- add request-level audit logging and security monitoring
-- add rate limiting and error budget monitoring for AI requests
-- store secrets only in server-side environment management
+- モック永続化をデータベースバックエンドのリポジトリに置き換える
+- 認証とSSOベースのロール解決を強制する
+- すべての管理書き込みをサーバーサイドの変更エンドポイントに移行する
+- リクエストレベルの監査ログとセキュリティ監視を追加する
+- AIリクエストのレート制限とエラーバジェット監視を追加する
+- シークレットはサーバーサイドの環境管理でのみ保存する

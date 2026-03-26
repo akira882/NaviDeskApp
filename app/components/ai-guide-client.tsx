@@ -1,52 +1,74 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRole } from "@/components/role-provider";
 import { SearchBar } from "@/components/search-bar";
 import { useSearchTelemetry } from "@/components/use-search-telemetry";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { answerGuide } from "@/lib/ai/guide-service";
-import type { Article, Category, FAQ, SearchLog } from "@/types/domain";
+import type { AiResponse } from "@/types/domain";
 
-export function AiGuideClient({
-  categories,
-  preloadedArticles,
-  preloadedFaqs,
-  searchLogs
-}: {
-  categories: Category[];
-  preloadedArticles: Article[];
-  preloadedFaqs: FAQ[];
-  searchLogs: SearchLog[];
-}) {
+export function AiGuideClient() {
   const { role } = useRole();
   const [question, setQuestion] = useState("");
+  const [result, setResult] = useState<AiResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Create minimal state object from props for AI guide service
-  const contentForAI = useMemo(
-    () => ({
-      articles: preloadedArticles,
-      faqs: preloadedFaqs,
-      searchLogs,
-      announcements: [],
-      quickLinks: [],
-      auditLogs: []
-    }),
-    [preloadedArticles, preloadedFaqs, searchLogs]
-  );
+  useEffect(() => {
+    if (!question.trim()) {
+      setResult(null);
+      return;
+    }
 
-  const result = useMemo(
-    () => answerGuide({ question, role, state: contentForAI, categories }),
-    [categories, contentForAI, question, role]
-  );
+    let cancelled = false;
+    setIsLoading(true);
+
+    // Call AI guide API with debounce
+    const timeoutId = setTimeout(async () => {
+      try {
+        const response = await fetch("/api/ai-guide", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ question, role })
+        });
+
+        if (!response.ok) {
+          throw new Error("API request failed");
+        }
+
+        const data: AiResponse = await response.json();
+
+        if (!cancelled) {
+          setResult(data);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("AI guide API error:", error);
+        if (!cancelled) {
+          setResult({
+            mode: "fallback",
+            message: "AI案内の取得中にエラーが発生しました。通常の検索をお試しください。",
+            suggestions: []
+          });
+          setIsLoading(false);
+        }
+      }
+    }, 500); // 500ms debounce
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [question, role]);
 
   useSearchTelemetry({
     query: question,
     surface: "ai-guide",
-    resultCount: result.mode === "answer" ? result.citations.length : result.suggestions.length
+    resultCount: result?.mode === "answer" ? result.citations.length : result?.suggestions.length ?? 0
   });
 
   return (
@@ -71,6 +93,12 @@ export function AiGuideClient({
           <h2 className="text-lg font-semibold text-ink sm:text-xl">回答結果</h2>
           {!question ? (
             <p className="text-sm text-slate-600">質問を入力すると、社内コンテンツを根拠にした案内を表示します。</p>
+          ) : isLoading ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-600">
+              AI案内を生成中...
+            </div>
+          ) : !result ? (
+            <p className="text-sm text-slate-600">質問を入力してください。</p>
           ) : result.mode === "answer" ? (
             <>
               <div className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm leading-7 text-slate-700">

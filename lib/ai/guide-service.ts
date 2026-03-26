@@ -1,4 +1,6 @@
 import { mockGuideProvider } from "@/lib/ai/providers/mock-guide-provider";
+import { bedrockGuideProvider } from "@/lib/ai/providers/bedrock-guide-provider";
+import { env } from "@/lib/env";
 import type { AiResponse, Category, PortalContentState, Role } from "@/types/domain";
 
 type GuideRequest = {
@@ -9,9 +11,29 @@ type GuideRequest = {
 };
 
 /**
- * Provides AI-guided answers based on internal content
- * Currently uses mock provider; future implementations will integrate server-side Gemini API
+ * Provides AI-guided answers based on internal content (synchronous)
+ * Currently uses mock provider for client-side use
  */
 export function answerGuide(request: GuideRequest): AiResponse {
   return mockGuideProvider(request);
+}
+
+/**
+ * Provides AI-guided answers based on internal content (async, server-side only)
+ * Selects provider based on NAVIDESK_AI_PROVIDER environment variable
+ * IMPORTANT: This function uses server-side credentials and MUST NOT be called from client components
+ */
+export async function answerGuideAsync(request: GuideRequest): Promise<AiResponse> {
+  const provider = env.NAVIDESK_AI_PROVIDER;
+
+  switch (provider) {
+    case "bedrock":
+      return await bedrockGuideProvider(request);
+    case "gemini":
+      // Future: Implement Gemini provider
+      throw new Error("Gemini provider not yet implemented");
+    case "mock":
+    default:
+      return mockGuideProvider(request);
+  }
 }
