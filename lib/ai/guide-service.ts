@@ -26,14 +26,19 @@ export function answerGuide(request: GuideRequest): AiResponse {
 export async function answerGuideAsync(request: GuideRequest): Promise<AiResponse> {
   const provider = env.NAVIDESK_AI_PROVIDER;
 
-  switch (provider) {
-    case "bedrock":
-      return await bedrockGuideProvider(request);
-    case "gemini":
-      // Future: Implement Gemini provider
-      throw new Error("Gemini provider not yet implemented");
-    case "mock":
-    default:
-      return mockGuideProvider(request);
+  try {
+    switch (provider) {
+      case "bedrock":
+        return await bedrockGuideProvider(request);
+      case "gemini":
+        console.warn("Gemini provider is not implemented. Falling back to mock guide provider.");
+        return mockGuideProvider(request);
+      case "mock":
+      default:
+        return mockGuideProvider(request);
+    }
+  } catch (error) {
+    console.error(`AI guide provider "${provider}" failed. Falling back to mock guide provider.`, error);
+    return mockGuideProvider(request);
   }
 }
