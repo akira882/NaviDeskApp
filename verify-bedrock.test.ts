@@ -38,8 +38,8 @@ test("Bedrock connectivity and model access", async () => {
     const response = await client.send(command);
     console.log("Bedrock response received:", response.output?.message?.content?.[0]?.text);
     expect(response.output?.message?.content?.[0]?.text).toBeDefined();
-  } catch (error: any) {
-    console.error("Bedrock connectivity failed:", error.message);
+  } catch (error) {
+    console.error("Bedrock connectivity failed:", error instanceof Error ? error.message : String(error));
     throw error;
   }
 }, 15000); // 15s timeout

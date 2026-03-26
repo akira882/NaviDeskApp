@@ -79,31 +79,64 @@ ${params.question}
 - 記事に書かれていないことは絶対に追加しないでください`;
 
   try {
-    // Initialize Bedrock client with AWS credentials from environment
-    const client = new BedrockRuntimeClient({
-      region: env.AWS_REGION,
-      credentials:
-        env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY
-          ? {
-              accessKeyId: env.AWS_ACCESS_KEY_ID,
-              secretAccessKey: env.AWS_SECRET_ACCESS_KEY
+    let aiAnswer: string | undefined;
+
+    // Use Bedrock API Key if available (Inference Profile authentication)
+    if (env.BEDROCK_API_KEY) {
+      // Bedrock Inference Profile API endpoint
+      // Note: API Keys are used with Inference Profiles, not standard model IDs
+      const apiEndpoint = `https://api.us-east-1.ai.aws.dev/converse`;
+
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${env.BEDROCK_API_KEY}`
+        },
+        body: JSON.stringify({
+          modelId: env.AWS_BEDROCK_MODEL_ID,
+          messages: [
+            {
+              role: "user",
+              content: [{ text: prompt }]
             }
-          : undefined // Use default credential provider chain if not specified
-    });
+          ]
+        })
+      });
 
-    const command = new ConverseCommand({
-      modelId: env.AWS_BEDROCK_MODEL_ID,
-      messages: [
-        {
-          role: "user",
-          content: [{ text: prompt }]
-        }
-      ]
-    });
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "Unknown error");
+        throw new Error(`Bedrock API error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
 
-    const response = await client.send(command);
+      const data = await response.json();
+      aiAnswer = data.output?.message?.content?.[0]?.text;
+    } else {
+      // Fall back to IAM credentials (original implementation)
+      const client = new BedrockRuntimeClient({
+        region: env.AWS_REGION,
+        credentials:
+          env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY
+            ? {
+                accessKeyId: env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: env.AWS_SECRET_ACCESS_KEY
+              }
+            : undefined // Use default credential provider chain if not specified
+      });
 
-    const aiAnswer = response.output?.message?.content?.[0]?.text;
+      const command = new ConverseCommand({
+        modelId: env.AWS_BEDROCK_MODEL_ID,
+        messages: [
+          {
+            role: "user",
+            content: [{ text: prompt }]
+          }
+        ]
+      });
+
+      const response = await client.send(command);
+      aiAnswer = response.output?.message?.content?.[0]?.text;
+    }
 
     if (!aiAnswer) {
       // Fallback if AI response is empty
