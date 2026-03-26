@@ -57,13 +57,13 @@ export const categories: Category[] = [
 const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy">> = [
   {
     id: "art-paid-leave",
-    title: "有休申請の手順",
+    title: "有給申請の手順",
     slug: "paid-leave-request",
     categoryId: "cat-hr",
     summary: "勤怠システムから有給休暇を申請し、承認完了まで確認する標準手順です。",
     content:
       "1. 勤怠システムへログインします。\n2. 申請メニューから「休暇申請」を選択します。\n3. 休暇種別で「年次有給休暇」を選択し、取得日と理由区分を入力します。\n4. 引き継ぎ事項がある場合は備考欄へ記載します。\n5. 直属上長の承認後、人事側で反映状況を確認します。\n6. 前日17時以降の申請は当日朝に上長へ口頭連絡してください。",
-    tags: ["有休", "勤怠", "申請"],
+    tags: ["有給", "有休", "勤怠", "申請"],
     status: "published",
     visibilityRole: "employee",
     relatedArticleIds: ["art-attendance-fix", "art-manager-approval"],
@@ -183,7 +183,7 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     categoryId: "cat-hr",
     summary: "退職時の手続き、返却物、最終出社日までの流れを整理しています。",
     content:
-      "1. 退職希望日の1ヶ月前までに直属上長へ退職意向を伝えてください。\n2. 人事へ退職届を提出します。\n3. 返却物: 社員証、PC、携帯電話、鍵、社内資料などを人事へ返却します。\n4. 最終勤務日までに有休消化計画を上長と調整してください。\n5. 退職日翌月に離職票と源泉徴収票を郵送します。\n6. 社会保険の資格喪失手続きは人事側で行います。",
+      "1. 退職希望日の1ヶ月前までに直属上長へ退職意向を伝えてください。\n2. 人事へ退職届を提出します。\n3. 返却物: 社員証、PC、携帯電話、鍵、社内資料などを人事へ返却します。\n4. 最終勤務日までに有給消化計画を上長と調整してください。\n5. 退職日翌月に離職票と源泉徴収票を郵送します。\n6. 社会保険の資格喪失手続きは人事側で行います。",
     tags: ["退職", "手続き", "人事"],
     status: "published",
     visibilityRole: "employee",
@@ -427,7 +427,7 @@ export const auditLogs: AuditLog[] = [
     targetType: "article",
     targetId: "art-paid-leave",
     timestamp: "2026-02-10T09:05:00+09:00",
-    detail: "有休申請記事の締切注記を更新"
+    detail: "有給申請記事の締切注記を更新"
   },
   {
     id: "log-2",

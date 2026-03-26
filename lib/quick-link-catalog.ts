@@ -28,23 +28,23 @@ const quickLinkCatalog: QuickLinkCatalogEntry[] = [
     label: "勤怠システム",
     url: "/tools/time-attendance",
     categoryId: "cat-work",
-    description: "打刻、有休、勤怠修正申請",
+    description: "打刻、有給、勤怠修正申請",
     sortOrder: 1,
     title: "勤怠システム",
-    pageDescription: "打刻、有休、勤怠修正の入口を 1 ページにまとめた社内導線です。",
+    pageDescription: "打刻、有給、勤怠修正の入口を 1 ページにまとめた社内導線です。",
     summary: "出退勤の打刻、休暇申請、勤怠修正で迷わないように、よく使う手続きを短い順路で整理しています。",
     primaryActions: [
       "出勤前後は打刻状況を確認する",
-      "休暇取得時は有休申請手順を先に確認する",
+      "休暇取得時は有給申請手順を先に確認する",
       "打刻漏れがあれば月末前に勤怠修正を完了する"
     ],
     checkpoints: [
       "締め日の前営業日 18:00 までに修正申請を完了する",
-      "前日 17:00 以降の有休申請は上長へ口頭連絡する",
+      "前日 17:00 以降の有給申請は上長へ口頭連絡する",
       "在宅勤務日は始業・終業報告も合わせて行う"
     ],
     relatedResources: [
-      { label: "有休申請の手順", href: "/articles/paid-leave-request" },
+      { label: "有給申請の手順", href: "/articles/paid-leave-request" },
       { label: "勤怠修正申請の方法", href: "/articles/attendance-correction" },
       { label: "FAQ を確認する", href: "/faq" }
     ]

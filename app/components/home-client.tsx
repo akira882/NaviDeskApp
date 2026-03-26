@@ -103,7 +103,7 @@ export function HomeClient({ categories }: { categories: Category[] }) {
                 )
               ) : (
                 <p className="rounded-xl bg-surface-muted p-4 text-sm text-slate-600">
-                  例: 「VPN 接続できない」「有休 申請」「勤怠 修正」
+                  例: 「VPN 接続できない」「有給 申請」「勤怠 修正」
                 </p>
               )}
             </div>

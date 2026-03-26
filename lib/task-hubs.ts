@@ -16,7 +16,7 @@ const taskHubs: TaskHub[] = [
   {
     slug: "attendance-leave",
     title: "休暇・勤怠",
-    summary: "打刻、有休、勤怠修正、在宅勤務報告を最短で完了するための導線。",
+    summary: "打刻、有給、勤怠修正、在宅勤務報告を最短で完了するための導線。",
     priority: 100,
     targetRoles: ["employee", "manager", "editor", "admin"],
     categories: ["cat-work", "cat-hr"],
