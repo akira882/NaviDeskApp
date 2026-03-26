@@ -496,7 +496,7 @@ export default function NotFound() {
             href="/articles/helpdesk-contact"
             className="text-accent-teal hover:underline"
           >
-            ITサポートデスクへお問い合わせください
+            社内IT企画部門へお問い合わせください
           </Link>
         </div>
       </div>

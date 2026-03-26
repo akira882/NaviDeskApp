@@ -97,7 +97,7 @@ export function HomeClient({ categories }: { categories: Category[] }) {
                       <Link href="/tasks" className="text-sm font-medium text-teal-700 underline underline-offset-4">タスクハブを見る</Link>
                       <Link href="/categories" className="text-sm font-medium text-teal-700 underline underline-offset-4">カテゴリから探す</Link>
                       <Link href="/ai-guide" className="text-sm font-medium text-teal-700 underline underline-offset-4">AI案内を試す</Link>
-                      <Link href="/articles/helpdesk-contact" className="text-sm font-medium text-teal-700 underline underline-offset-4">ITサポートデスクへ問い合わせ</Link>
+                      <Link href="/articles/helpdesk-contact" className="text-sm font-medium text-teal-700 underline underline-offset-4">社内IT企画部門へ問い合わせ</Link>
                     </div>
                   </div>
                 )

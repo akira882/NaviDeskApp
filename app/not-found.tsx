@@ -8,7 +8,7 @@ import Link from "next/link";
  *
  * DESIGN PRINCIPLES:
  * 1. ユーザーフレンドリーなメッセージ（技術用語を避ける）
- * 2. 明確な次のアクション（ホーム、FAQ、ITサポートデスク）
+ * 2. 明確な次のアクション（ホーム、FAQ、社内IT企画部門）
  * 3. ブランドカラーを使用したデザイン統一
  */
 export default function NotFound() {
@@ -122,7 +122,7 @@ export default function NotFound() {
                 d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
               />
             </svg>
-            ITサポートデスクへお問い合わせください
+            社内IT企画部門へお問い合わせください
           </Link>
         </div>
       </div>

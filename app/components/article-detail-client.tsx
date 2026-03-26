@@ -70,10 +70,10 @@ export function ArticleDetailClient({
           <CardContent className="space-y-2">
             <p className="text-sm font-medium text-ink">この記事で解決しない場合</p>
             <p className="text-xs leading-6 text-slate-600 sm:text-sm">
-              記事の内容だけでは解決できない場合、または追加のサポートが必要な場合は、ITサポートデスクへお問い合わせください。
+              記事の内容だけでは解決できない場合、または追加のサポートが必要な場合は、社内IT企画部門へお問い合わせください。
             </p>
             <Link href="/articles/helpdesk-contact" className="inline-block text-sm font-medium text-teal-700 underline underline-offset-4">
-              ITサポートデスクへ問い合わせ
+              社内IT企画部門へ問い合わせ
             </Link>
           </CardContent>
         </Card>

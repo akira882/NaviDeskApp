@@ -183,7 +183,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       // ユーザーフレンドリーなエラー画面を表示
       // - ページ再読み込みボタン
       // - ホームへ戻るリンク
-      // - ITサポートデスクへの導線
+      // - 社内IT企画部門への導線
       // - 開発モード時はエラー詳細を表示
     }
     return this.props.children;
@@ -222,7 +222,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 - AI案内を使う
 
 **エスカレーション導線**:
-- ITサポートデスクへのリンク
+- 社内IT企画部門へのリンク
 
 **デザイン原則**:
 1. ユーザーフレンドリーなメッセージ（技術用語を避ける）

@@ -256,7 +256,7 @@ export function AiGuideClient() {
                 ) : (
                   <div className="space-y-2 text-sm text-slate-600">
                     <p>関連候補は見つかりませんでした。別キーワードで再検索してください。</p>
-                    <Link href="/articles/helpdesk-contact" className="inline-block font-medium text-teal-700 underline underline-offset-4">ITサポートデスクへ問い合わせ</Link>
+                    <Link href="/articles/helpdesk-contact" className="inline-block font-medium text-teal-700 underline underline-offset-4">社内IT企画部門へ問い合わせ</Link>
                   </div>
                 )}
               </div>
