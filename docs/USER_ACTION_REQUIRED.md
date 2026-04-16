@@ -143,7 +143,7 @@ Amazon Bedrock を実際に動かすには、**あなた自身が AWS Access Key
 
 以下のファイルを開く:
 ```
-/Users/882akira/Desktop/01 Portfolio/01 Navidesk_NJC Portfolio_Akira Koshimizu/.env.local
+<プロジェクトルート>/.env.local
 ```
 
 以下のように更新:
@@ -169,7 +169,7 @@ NAVIDESK_SESSION_ROLE="employee"
 ターミナルを開き、以下を実行:
 
 ```bash
-cd /Users/882akira/Desktop/01\ Portfolio/01\ Navidesk_NJC\ Portfolio_Akira\ Koshimizu
+cd <プロジェクトルート>
 
 # 開発サーバー起動
 npm run dev

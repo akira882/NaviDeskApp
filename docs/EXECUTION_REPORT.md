@@ -6,7 +6,7 @@
 ## ✅ 実行完了項目
 
 ### 1. `.env.local` ファイルの作成
-**ファイルパス:** `/Users/882akira/Desktop/01 Portfolio/01 Navidesk_NJC Portfolio_Akira Koshimizu/.env.local`
+**ファイルパス:** `<プロジェクトルート>/.env.local`
 
 **内容:**
 ```bash

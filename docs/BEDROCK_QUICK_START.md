@@ -16,7 +16,7 @@
 プロジェクトルートで以下のコマンドを実行：
 
 ```bash
-cd /Users/882akira/Desktop/01\ Portfolio/01\ Navidesk_NJC\ Portfolio_Akira\ Koshimizu
+cd <プロジェクトルート>
 
 # .env.example をコピー
 cp .env.example .env.local
