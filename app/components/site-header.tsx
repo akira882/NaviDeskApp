@@ -41,9 +41,6 @@ export function SiteHeader() {
         {/* Logo */}
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-teal text-ink text-sm font-bold">
-              ND
-            </div>
             <span className="text-base font-bold text-text-primary">Navidesk</span>
           </Link>
           {/* Mobile role */}
