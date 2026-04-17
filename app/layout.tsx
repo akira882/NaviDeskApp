@@ -29,8 +29,8 @@ export default function RootLayout({
   ) as Record<Role, string>;
 
   return (
-    <html lang="ja">
-      <body className="font-sans">
+    <html lang="ja" className="dark">
+      <body className="bg-ink text-text-primary font-sans antialiased">
         <ErrorBoundary>
           <RoleProvider initialRole={role}>
             <ContentProvider initialState={initialState} actorIdByRole={actorIdByRole}>
