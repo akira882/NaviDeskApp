@@ -54,7 +54,7 @@ export const categories: Category[] = [
   { id: "cat-benefit", slug: "benefits", name: "福利厚生", description: "補助制度、健康支援、社内制度の利用案内", ownerDepartment: "人事部" }
 ];
 
-const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy">> = [
+const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy" | "ownerId">> = [
   {
     id: "art-paid-leave",
     title: "有給申請の手順",
@@ -368,7 +368,7 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
   }
 ];
 
-export const articles: Article[] = articleSeed.map((article) => withSeedApproval(article));
+export const articles: Article[] = articleSeed.map((article) => withSeedApproval({ ...article, ownerId: null }));
 
 const faqSeed: Array<Omit<FAQ, "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy">> = [
   {
