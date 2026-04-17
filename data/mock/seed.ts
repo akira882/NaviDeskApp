@@ -68,7 +68,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-attendance-fix", "art-manager-approval"],
     updatedAt: "2026-02-10T09:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 47,
+    notHelpfulCount: 3
   },
   {
     id: "art-attendance-fix",
@@ -83,7 +85,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-paid-leave"],
     updatedAt: "2026-02-15T10:30:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 31,
+    notHelpfulCount: 5
   },
   {
     id: "art-vpn",
@@ -98,7 +102,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-password-reset", "art-helpdesk"],
     updatedAt: "2026-01-28T13:00:00+09:00",
-    updatedBy: "u-adm"
+    updatedBy: "u-adm",
+    helpfulCount: 28,
+    notHelpfulCount: 12
   },
   {
     id: "art-password-reset",
@@ -113,7 +119,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-helpdesk"],
     updatedAt: "2026-02-01T11:00:00+09:00",
-    updatedBy: "u-adm"
+    updatedBy: "u-adm",
+    helpfulCount: 22,
+    notHelpfulCount: 2
   },
   {
     id: "art-benefits",
@@ -128,7 +136,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: [],
     updatedAt: "2026-02-20T15:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 15,
+    notHelpfulCount: 4
   },
   {
     id: "art-helpdesk",
@@ -143,7 +153,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-vpn", "art-password-reset"],
     updatedAt: "2026-02-12T16:15:00+09:00",
-    updatedBy: "u-adm"
+    updatedBy: "u-adm",
+    helpfulCount: 18,
+    notHelpfulCount: 6
   },
   {
     id: "art-manager-approval",
@@ -158,7 +170,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "manager",
     relatedArticleIds: ["art-paid-leave", "art-attendance-fix"],
     updatedAt: "2026-02-22T14:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 8,
+    notHelpfulCount: 1
   },
   // 人事カテゴリ追加 (+2件)
   {
@@ -174,7 +188,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-paid-leave"],
     updatedAt: "2026-01-15T10:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 12,
+    notHelpfulCount: 2
   },
   {
     id: "art-resignation",
@@ -189,7 +205,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: [],
     updatedAt: "2026-01-20T11:30:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 6,
+    notHelpfulCount: 1
   },
   // 総務カテゴリ追加 (+3件)
   {
@@ -205,7 +223,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: [],
     updatedAt: "2026-02-05T09:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 19,
+    notHelpfulCount: 3
   },
   {
     id: "art-supplies",
@@ -220,7 +240,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: [],
     updatedAt: "2026-02-08T14:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 9,
+    notHelpfulCount: 2
   },
   {
     id: "art-visitor",
@@ -235,7 +257,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: [],
     updatedAt: "2026-02-12T10:30:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 7,
+    notHelpfulCount: 1
   },
   // 申請・手続きカテゴリ追加 (+2件)
   {
@@ -251,7 +275,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: [],
     updatedAt: "2026-02-18T13:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 24,
+    notHelpfulCount: 4
   },
   {
     id: "art-business-trip",
@@ -266,7 +292,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-expense"],
     updatedAt: "2026-02-20T15:30:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 16,
+    notHelpfulCount: 3
   },
   // 就業ルールカテゴリ追加 (+2件)
   {
@@ -282,7 +310,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-vpn", "art-attendance-fix"],
     updatedAt: "2026-01-25T09:30:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 33,
+    notHelpfulCount: 7
   },
   {
     id: "art-overtime",
@@ -297,7 +327,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-attendance-fix"],
     updatedAt: "2026-02-03T10:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 14,
+    notHelpfulCount: 3
   },
   // 福利厚生カテゴリ追加 (+2件)
   {
@@ -313,7 +345,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: ["art-benefits"],
     updatedAt: "2026-02-25T14:30:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 11,
+    notHelpfulCount: 2
   },
   {
     id: "art-condolence",
@@ -328,7 +362,9 @@ const articleSeed: Array<Omit<Article, "approvalStatus" | "reviewComment" | "rev
     visibilityRole: "employee",
     relatedArticleIds: [],
     updatedAt: "2026-02-28T16:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 5,
+    notHelpfulCount: 1
   }
 ];
 
@@ -344,7 +380,9 @@ const faqSeed: Array<Omit<FAQ, "approvalStatus" | "reviewComment" | "reviewedAt"
     status: "published",
     visibilityRole: "employee",
     updatedAt: "2026-02-18T09:30:00+09:00",
-    updatedBy: "u-adm"
+    updatedBy: "u-adm",
+    helpfulCount: 23,
+    notHelpfulCount: 8
   },
   {
     id: "faq-attendance",
@@ -355,7 +393,9 @@ const faqSeed: Array<Omit<FAQ, "approvalStatus" | "reviewComment" | "reviewedAt"
     status: "published",
     visibilityRole: "employee",
     updatedAt: "2026-02-14T09:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 18,
+    notHelpfulCount: 2
   },
   {
     id: "faq-benefit",
@@ -366,7 +406,9 @@ const faqSeed: Array<Omit<FAQ, "approvalStatus" | "reviewComment" | "reviewedAt"
     status: "published",
     visibilityRole: "employee",
     updatedAt: "2026-02-20T16:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 12,
+    notHelpfulCount: 2
   },
   {
     id: "faq-manager",
@@ -377,7 +419,9 @@ const faqSeed: Array<Omit<FAQ, "approvalStatus" | "reviewComment" | "reviewedAt"
     status: "published",
     visibilityRole: "manager",
     updatedAt: "2026-02-25T10:00:00+09:00",
-    updatedBy: "u-edt"
+    updatedBy: "u-edt",
+    helpfulCount: 7,
+    notHelpfulCount: 1
   }
 ];
 

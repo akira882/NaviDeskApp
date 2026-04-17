@@ -17,46 +17,45 @@ export function CategoryDetailClient({
   if (!category) {
     return (
       <Card>
-        <CardContent className="text-sm text-slate-600">カテゴリが見つかりませんでした。</CardContent>
+        <CardContent className="text-sm text-text-secondary">カテゴリが見つかりませんでした。</CardContent>
       </Card>
     );
   }
 
-  const categoryArticles = visibleArticles;
-  const quickLinks = quickLinksForCategory;
-
   return (
     <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-ink">記事一覧</h2>
-        {categoryArticles.length > 0 ? (
-          <ArticleList articles={categoryArticles} categories={[category]} />
+        <h2 className="text-xl font-semibold text-text-primary">記事一覧</h2>
+        {visibleArticles.length > 0 ? (
+          <ArticleList articles={visibleArticles} categories={[category]} />
         ) : (
           <Card>
-            <CardContent className="text-sm text-slate-600">このロールで閲覧可能な記事はありません。</CardContent>
+            <CardContent className="text-sm text-text-secondary">このロールで閲覧可能な記事はありません。</CardContent>
           </Card>
         )}
       </section>
       <aside className="space-y-4">
         <Card>
           <CardContent className="space-y-2">
-            <h3 className="text-lg font-semibold text-ink">カテゴリ概要</h3>
-            <p className="text-sm leading-6 text-slate-600">{category.description}</p>
-            <p className="text-sm text-slate-500">主管部門: {category.ownerDepartment}</p>
+            <h3 className="text-lg font-semibold text-text-primary">カテゴリ概要</h3>
+            <p className="text-sm leading-6 text-text-secondary">{category.description}</p>
+            <p className="text-sm text-text-muted">主管部門: {category.ownerDepartment}</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="space-y-3">
-            <h3 className="text-lg font-semibold text-ink">関連リンク</h3>
-            {quickLinks.map((link) => (
-              <QuickLinkItem
-                key={link.id}
-                link={link}
-                className="block rounded-xl border border-slate-200 p-4 hover:bg-slate-50"
-              />
-            ))}
-          </CardContent>
-        </Card>
+        {quickLinksForCategory.length > 0 && (
+          <Card>
+            <CardContent className="space-y-3">
+              <h3 className="text-lg font-semibold text-text-primary">関連リンク</h3>
+              {quickLinksForCategory.map((link) => (
+                <QuickLinkItem
+                  key={link.id}
+                  link={link}
+                  className="block rounded-lg border border-line-subtle p-3.5 hover:bg-surface-2 transition-colors"
+                />
+              ))}
+            </CardContent>
+          </Card>
+        )}
       </aside>
     </div>
   );

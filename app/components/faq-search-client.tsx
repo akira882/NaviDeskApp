@@ -52,31 +52,31 @@ export function FAQSearchClient({
           const categoryName = categories.find((category) => category.id === faq.categoryId)?.name ?? "未分類";
 
           return (
-            <Card key={faq.id} className={isHighlight ? "border-teal-600" : undefined}>
+            <Card key={faq.id} className={isHighlight ? "border-accent-teal/50" : undefined}>
               <CardContent className="space-y-2.5 sm:space-y-3">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                  <Badge className="text-xs">{categoryName}</Badge>
+                  <Badge>{categoryName}</Badge>
                   {faq.tags.map((tag) => (
-                    <Badge key={tag} className="bg-slate-50 text-xs">
+                    <Badge key={tag} className="border-line-mid bg-surface-2 text-text-muted">
                       {tag}
                     </Badge>
                   ))}
-                  <span className="text-xs text-slate-500">更新日: {formatDate(faq.updatedAt)}</span>
+                  <span className="text-xs text-text-muted">更新日: {formatDate(faq.updatedAt)}</span>
                 </div>
-                <h2 className="text-base font-semibold text-ink sm:text-lg">{faq.question}</h2>
-                <p className="text-xs leading-6 text-slate-700 sm:text-sm sm:leading-7">{faq.answer}</p>
+                <h2 className="text-base font-semibold text-text-primary sm:text-lg">{faq.question}</h2>
+                <p className="text-sm leading-7 text-text-secondary">{faq.answer}</p>
               </CardContent>
             </Card>
           );
         })}
         {displayFaqs.length === 0 ? (
           <Card>
-            <CardContent className="space-y-3 text-xs text-slate-600 sm:text-sm">
+            <CardContent className="space-y-3 text-sm text-text-secondary">
               <p>条件に一致する FAQ が見つかりませんでした。</p>
-              <div className="flex flex-wrap gap-2">
-                <Link href="/categories" className="font-medium text-teal-700 underline underline-offset-4">カテゴリから確認する</Link>
-                <Link href="/ai-guide" className="font-medium text-teal-700 underline underline-offset-4">AI案内で関連候補を見る</Link>
-                <Link href="/articles/helpdesk-contact" className="font-medium text-teal-700 underline underline-offset-4">社内IT企画部門へ問い合わせ</Link>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/categories" className="text-accent-teal hover:underline underline-offset-4">カテゴリから確認する</Link>
+                <Link href="/ai-guide" className="text-accent-teal hover:underline underline-offset-4">AI案内で関連候補を見る</Link>
+                <Link href="/articles/helpdesk-contact" className="text-accent-teal hover:underline underline-offset-4">社内IT企画部門へ問い合わせ</Link>
               </div>
             </CardContent>
           </Card>

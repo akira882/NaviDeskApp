@@ -24,7 +24,7 @@ import {
   type QuickLinkFormValues
 } from "@/lib/schemas";
 import { listFailedSearchThemes } from "@/lib/content-helpers";
-import { getFreshnessLabel, getFreshnessStatus, getFreshnessTone, listReviewPriorityItems } from "@/lib/content-governance";
+import { getFreshnessLabel, getFreshnessStatus, getFreshnessTone, listFeedbackFlaggedItems, listReviewPriorityItems } from "@/lib/content-governance";
 import { canApproveContent } from "@/lib/roles";
 import { formatDate, splitTags } from "@/lib/utils";
 import type { Article, Announcement, ApprovalStatus, Category, FAQ, QuickLink, Role } from "@/types/domain";
@@ -134,15 +134,19 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
       }),
     [content.announcements, content.articles, content.faqs]
   );
+  const feedbackFlaggedItems = useMemo(
+    () => listFeedbackFlaggedItems({ articles: content.articles, faqs: content.faqs }),
+    [content.articles, content.faqs]
+  );
   const failedSearchThemes = useMemo(() => listFailedSearchThemes(content.searchLogs), [content.searchLogs]);
   const selectedReviewItem = pendingApprovals.find((item) => `${item.kind}-${item.id}` === selectedReviewKey) ?? null;
 
   function renderApprovalBadge(status: ApprovalStatus) {
     const tone = {
-      not_requested: "bg-slate-50 text-slate-700",
-      pending: "bg-amber-50 text-amber-900",
-      approved: "bg-emerald-50 text-emerald-800",
-      changes_requested: "bg-rose-50 text-rose-800"
+      not_requested: "border-line-mid bg-surface-2 text-text-muted",
+      pending: "bg-accent-gold/10 text-accent-gold",
+      approved: "bg-accent-teal/10 text-accent-teal",
+      changes_requested: "bg-accent-crimson/10 text-accent-crimson"
     } satisfies Record<ApprovalStatus, string>;
 
     return <Badge className={tone[status]}>{getApprovalLabel(status)}</Badge>;
@@ -202,13 +206,14 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
   return (
     <div className="space-y-4 sm:space-y-6">
       <Card>
-        <CardContent className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-6">
+        <CardContent className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 xl:grid-cols-7">
           <MetricCard label="記事" value={content.articles.length} />
           <MetricCard label="FAQ" value={content.faqs.length} />
           <MetricCard label="お知らせ" value={content.announcements.length} />
           <MetricCard label="クイックリンク" value={content.quickLinks.length} />
           <MetricCard label="承認待ち" value={pendingApprovals.length} />
           <MetricCard label="検索失敗" value={failedSearchThemes.length} />
+          <MetricCard label="解決できず" value={feedbackFlaggedItems.length} />
         </CardContent>
       </Card>
 
@@ -216,29 +221,64 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-ink">検索不足テーマ</h2>
-              <p className="text-sm text-slate-600">ゼロ件検索が多いテーマを記事化・FAQ化の候補として表示します。</p>
+              <h2 className="text-lg font-semibold text-text-primary">フィードバック要改善</h2>
+              <p className="text-sm text-text-secondary">「解決しなかった」が30%以上かつ5票以上のコンテンツです。内容の見直しを優先してください。</p>
             </div>
-            <Badge className="bg-slate-50">{failedSearchThemes.length}件</Badge>
+            <Badge className="bg-accent-crimson/10 text-accent-crimson">{feedbackFlaggedItems.length}件</Badge>
+          </div>
+          {feedbackFlaggedItems.length > 0 ? (
+            <div className="space-y-3">
+              {feedbackFlaggedItems.map((item) => (
+                <div key={`${item.kind}-${item.id}`} className="flex flex-col gap-2 rounded-xl border border-accent-crimson/20 bg-accent-crimson/5 p-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Badge className="border-line-mid bg-surface-2 text-text-muted">{item.kind === "article" ? "記事" : "FAQ"}</Badge>
+                      <Badge className="bg-accent-crimson/10 text-accent-crimson">
+                        解決できず {Math.round(item.notHelpfulRate * 100)}%
+                      </Badge>
+                    </div>
+                    <p className="font-medium text-text-primary">{item.title}</p>
+                    <p className="text-xs text-text-muted">
+                      役に立った: {item.helpfulCount}件 / 解決しなかった: {item.notHelpfulCount}件
+                    </p>
+                  </div>
+                  <p className="text-sm text-text-secondary">記事の手順・説明を見直し、FAQ補強を検討してください。</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-xl bg-surface-2 p-4 text-sm text-text-muted">フィードバックに問題のあるコンテンツはありません。</p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-text-primary">検索不足テーマ</h2>
+              <p className="text-sm text-text-secondary">ゼロ件検索が多いテーマを記事化・FAQ化の候補として表示します。</p>
+            </div>
+            <Badge className="border-line-mid bg-surface-2 text-text-muted">{failedSearchThemes.length}件</Badge>
           </div>
           {failedSearchThemes.length > 0 ? (
             <div className="space-y-3">
               {failedSearchThemes.slice(0, 6).map((item) => (
-                <div key={`${item.query}-${item.surface}`} className="flex flex-col gap-2 rounded-xl border border-slate-200 p-4 lg:flex-row lg:items-center lg:justify-between">
+                <div key={`${item.query}-${item.surface}`} className="flex flex-col gap-2 rounded-xl border border-line-subtle p-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-rose-50 text-rose-800">検索失敗 {item.count}回</Badge>
-                      <Badge className="bg-slate-50">{item.surface === "home" ? "ホーム検索" : item.surface === "faq" ? "FAQ検索" : "AI案内"}</Badge>
+                      <Badge className="bg-accent-crimson/10 text-accent-crimson">検索失敗 {item.count}回</Badge>
+                      <Badge className="border-line-mid bg-surface-2 text-text-muted">{item.surface === "home" ? "ホーム検索" : item.surface === "faq" ? "FAQ検索" : "AI案内"}</Badge>
                     </div>
-                    <p className="font-medium text-ink">{item.query}</p>
-                    <p className="text-xs text-slate-500">最終検索: {formatDate(item.lastSearchedAt)}</p>
+                    <p className="font-medium text-text-primary">{item.query}</p>
+                    <p className="text-xs text-text-muted">最終検索: {formatDate(item.lastSearchedAt)}</p>
                   </div>
-                  <p className="text-sm text-slate-600">FAQ追加、既存記事のタグ補強、タスクハブ導線追加の候補です。</p>
+                  <p className="text-sm text-text-secondary">FAQ追加、既存記事のタグ補強、タスクハブ導線追加の候補です。</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="rounded-xl bg-surface-muted p-4 text-sm text-slate-600">現在、目立った検索不足テーマはありません。</p>
+            <p className="rounded-xl bg-surface-2 p-4 text-sm text-text-muted">現在、目立った検索不足テーマはありません。</p>
           )}
         </CardContent>
       </Card>
@@ -247,29 +287,29 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-ink">レビュー優先キュー</h2>
-              <p className="text-sm text-slate-600">更新から30日以上経過したコンテンツを優先度順に表示します。</p>
+              <h2 className="text-lg font-semibold text-text-primary">レビュー優先キュー</h2>
+              <p className="text-sm text-text-secondary">更新から30日以上経過したコンテンツを優先度順に表示します。</p>
             </div>
-            <Badge className="bg-rose-50 text-rose-800">{reviewPriorityItems.length}件</Badge>
+            <Badge className="bg-accent-crimson/10 text-accent-crimson">{reviewPriorityItems.length}件</Badge>
           </div>
           {reviewPriorityItems.length > 0 ? (
             <div className="space-y-3">
               {reviewPriorityItems.slice(0, 6).map((item) => (
-                <div key={`${item.kind}-${item.id}`} className="flex flex-col gap-2 rounded-xl border border-slate-200 p-4 lg:flex-row lg:items-center lg:justify-between">
+                <div key={`${item.kind}-${item.id}`} className="flex flex-col gap-2 rounded-xl border border-line-subtle p-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-slate-50">{item.kind === "article" ? "記事" : item.kind === "faq" ? "FAQ" : "お知らせ"}</Badge>
+                      <Badge className="border-line-mid bg-surface-2 text-text-muted">{item.kind === "article" ? "記事" : item.kind === "faq" ? "FAQ" : "お知らせ"}</Badge>
                       <Badge className={getFreshnessTone(item.freshnessStatus)}>{item.freshnessLabel}</Badge>
                     </div>
-                    <p className="font-medium text-ink">{item.title}</p>
-                    <p className="text-xs text-slate-500">最終更新日: {formatDate(item.updatedAt)}</p>
+                    <p className="font-medium text-text-primary">{item.title}</p>
+                    <p className="text-xs text-text-muted">最終更新日: {formatDate(item.updatedAt)}</p>
                   </div>
-                  <p className="text-sm text-slate-600">定期レビュー対象です。内容の有効性とリンク切れを確認してください。</p>
+                  <p className="text-sm text-text-secondary">定期レビュー対象です。内容の有効性とリンク切れを確認してください。</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="rounded-xl bg-surface-muted p-4 text-sm text-slate-600">更新期限が近いコンテンツはありません。</p>
+            <p className="rounded-xl bg-surface-2 p-4 text-sm text-text-muted">更新期限が近いコンテンツはありません。</p>
           )}
         </CardContent>
       </Card>
@@ -278,24 +318,24 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-ink">承認キュー</h2>
-              <p className="text-sm text-slate-600">
+              <h2 className="text-lg font-semibold text-text-primary">承認キュー</h2>
+              <p className="text-sm text-text-secondary">
                 {canApprove ? "承認待ちコンテンツを確認し、承認または差し戻しを実行します。" : "下書きを保存した後、この一覧に載る状態まで承認申請してください。"}
               </p>
             </div>
-            <Badge className="bg-amber-50 text-amber-900">{pendingApprovals.length}件</Badge>
+            <Badge className="bg-accent-gold/10 text-accent-gold">{pendingApprovals.length}件</Badge>
           </div>
           {pendingApprovals.length > 0 ? (
             <div className="space-y-3">
               {pendingApprovals.map((item) => (
-                <div key={`${item.kind}-${item.id}`} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 lg:flex-row lg:items-center lg:justify-between">
+                <div key={`${item.kind}-${item.id}`} className="flex flex-col gap-3 rounded-xl border border-line-subtle p-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-slate-50">{item.kind === "article" ? "記事" : item.kind === "faq" ? "FAQ" : "お知らせ"}</Badge>
+                      <Badge className="border-line-mid bg-surface-2 text-text-muted">{item.kind === "article" ? "記事" : item.kind === "faq" ? "FAQ" : "お知らせ"}</Badge>
                       {renderApprovalBadge(item.approvalStatus)}
                     </div>
-                    <p className="font-medium text-ink">{item.title}</p>
-                    <p className="text-xs text-slate-500">更新日: {formatDate(item.updatedAt)}</p>
+                    <p className="font-medium text-text-primary">{item.title}</p>
+                    <p className="text-xs text-text-muted">更新日: {formatDate(item.updatedAt)}</p>
                   </div>
                   {canApprove ? (
                     <div className="flex gap-2">
@@ -308,25 +348,25 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-500">承認者のレビュー待ちです。</p>
+                    <p className="text-sm text-text-secondary">承認者のレビュー待ちです。</p>
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <p className="rounded-xl bg-surface-muted p-4 text-sm text-slate-600">現在の承認待ちコンテンツはありません。</p>
+            <p className="rounded-xl bg-surface-2 p-4 text-sm text-text-muted">現在の承認待ちコンテンツはありません。</p>
           )}
           {canApprove && selectedReviewItem ? (
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="rounded-2xl border border-line-subtle bg-ink-soft p-4">
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge className="bg-white">
+                  <Badge className="border-line-mid bg-surface-2 text-text-muted">
                     {selectedReviewItem.kind === "article" ? "記事" : selectedReviewItem.kind === "faq" ? "FAQ" : "お知らせ"}
                   </Badge>
                   {renderApprovalBadge(selectedReviewItem.approvalStatus)}
                 </div>
-                <h3 className="text-base font-semibold text-ink">{selectedReviewItem.title}</h3>
-                <p className="text-sm text-slate-600">承認理由または差し戻し理由を入力してレビューを完了してください。</p>
+                <h3 className="text-base font-semibold text-text-primary">{selectedReviewItem.title}</h3>
+                <p className="text-sm text-text-secondary">承認理由または差し戻し理由を入力してレビューを完了してください。</p>
               </div>
               <div className="mt-4 space-y-3">
                 <Field label="レビューコメント" error={reviewError ?? undefined}>
@@ -545,7 +585,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                           承認申請
                         </Button>
                       ) : (
-                        <Badge className="bg-amber-50 text-amber-900">承認待ち</Badge>
+                        <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
                       )}
                       <Button
                         type="button"
@@ -690,7 +730,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                           承認申請
                         </Button>
                       ) : (
-                        <Badge className="bg-amber-50 text-amber-900">承認待ち</Badge>
+                        <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
                       )}
                       <Button
                         type="button"
@@ -814,7 +854,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                           承認申請
                         </Button>
                       ) : (
-                        <Badge className="bg-amber-50 text-amber-900">承認待ち</Badge>
+                        <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
                       )}
                       <Button
                         type="button"
@@ -941,9 +981,9 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
 
 function MetricCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
-      <p className="text-xs text-slate-500 sm:text-sm">{label}</p>
-      <p className="mt-1.5 text-2xl font-semibold text-ink sm:mt-2 sm:text-3xl">{value}</p>
+    <div className="rounded-lg border border-line-subtle bg-surface-1 p-3 sm:p-4 hover:border-line-mid transition-colors">
+      <p className="text-xs text-text-muted">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-text-primary sm:text-3xl">{value}</p>
     </div>
   );
 }
@@ -959,25 +999,25 @@ function Field({
 }) {
   return (
     <label className="block space-y-2">
-      <span className="text-sm font-medium text-ink">{label}</span>
+      <span className="text-sm font-medium text-text-primary">{label}</span>
       {children}
-      {error ? <span className="text-xs text-rose-700">{error}</span> : null}
+      {error ? <span className="text-xs text-accent-crimson">{error}</span> : null}
     </label>
   );
 }
 
 function FormHeader({ title }: { title: string }) {
-  return <h3 className="text-lg font-semibold text-ink">{title}</h3>;
+  return <h3 className="text-lg font-semibold text-text-primary">{title}</h3>;
 }
 
 function ResourceTable({ columns, rows }: { columns: string[]; rows: React.ReactNode[] }) {
   return (
-    <div className="-mx-3 overflow-x-auto rounded-xl border border-slate-200 sm:mx-0">
+    <div className="-mx-3 overflow-x-auto rounded-lg border border-line-subtle sm:mx-0">
       <Table>
-        <thead className="bg-slate-50">
+        <thead className="bg-surface-2 border-b border-line-subtle">
           <tr>
             {columns.map((column) => (
-              <Th key={column} className="whitespace-nowrap text-xs sm:text-sm">{column}</Th>
+              <Th key={column} className="whitespace-nowrap text-xs text-text-muted">{column}</Th>
             ))}
           </tr>
         </thead>

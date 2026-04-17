@@ -21,10 +21,10 @@ function getApprovalLabel(status: ApprovalStatus) {
 function getApprovalTone(status: ApprovalStatus) {
   return (
     {
-      not_requested: "bg-slate-50 text-slate-700",
-      pending: "bg-amber-50 text-amber-900",
-      approved: "bg-emerald-50 text-emerald-800",
-      changes_requested: "bg-rose-50 text-rose-800"
+      not_requested: "border-line-mid bg-surface-2 text-text-muted",
+      pending: "border-accent-gold/25 bg-accent-gold/10 text-accent-gold",
+      approved: "border-accent-green/25 bg-accent-green/10 text-accent-green",
+      changes_requested: "border-accent-crimson/25 bg-accent-crimson/10 text-accent-crimson"
     } satisfies Record<ApprovalStatus, string>
   )[status];
 }
@@ -48,39 +48,41 @@ export function ContentGovernanceCard({
     <Card>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <h3 className="text-base font-semibold text-ink sm:text-lg">運用・承認情報</h3>
-          <Badge className={getApprovalTone(approvalStatus)}>{getApprovalLabel(approvalStatus)}</Badge>
-          <Badge className={getFreshnessTone(getFreshnessStatus(updatedAt))}>{getFreshnessLabel(updatedAt)}</Badge>
+          <h3 className="text-base font-semibold text-text-primary sm:text-lg">運用・承認情報</h3>
+          <div className="flex flex-wrap gap-2">
+            <Badge className={getApprovalTone(approvalStatus)}>{getApprovalLabel(approvalStatus)}</Badge>
+            <Badge className={getFreshnessTone(getFreshnessStatus(updatedAt))}>{getFreshnessLabel(updatedAt)}</Badge>
+          </div>
         </div>
 
-        <div className="space-y-1 text-sm text-slate-600">
+        <div className="space-y-1 text-sm text-text-secondary">
           <p>レビュー日時: {formatDateTime(reviewedAt)}</p>
           <p>レビュー担当: {reviewerName ?? "未設定"}</p>
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm font-medium text-ink">レビューコメント</p>
-          <p className="rounded-xl bg-surface-muted p-3 text-sm leading-6 text-slate-600">
+          <p className="text-sm font-medium text-text-primary">レビューコメント</p>
+          <p className="rounded-lg border border-line-subtle bg-surface-2 p-3 text-sm leading-6 text-text-secondary">
             {reviewComment ?? "レビューコメントはありません。"}
           </p>
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm font-medium text-ink">最近の変更履歴</p>
+          <p className="text-sm font-medium text-text-primary">最近の変更履歴</p>
           {auditLogs.length > 0 ? (
             <div className="space-y-2">
               {auditLogs.map((log) => (
-                <div key={log.id} className="rounded-xl border border-slate-200 p-3">
+                <div key={log.id} className="rounded-lg border border-line-subtle bg-ink-soft p-3">
                   <div className="flex items-center justify-between gap-2">
-                    <Badge className="bg-slate-50">{getAuditActionLabel(log.action)}</Badge>
-                    <span className="text-xs text-slate-500">{formatDateTime(log.timestamp)}</span>
+                    <Badge className="border-line-mid bg-surface-2 text-text-muted">{getAuditActionLabel(log.action)}</Badge>
+                    <span className="text-xs text-text-muted">{formatDateTime(log.timestamp)}</span>
                   </div>
-                  <p className="mt-2 text-sm text-slate-700">{log.detail}</p>
+                  <p className="mt-2 text-sm text-text-secondary">{log.detail}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-slate-600">このコンテンツに紐づく履歴はまだありません。</p>
+            <p className="text-sm text-text-muted">このコンテンツに紐づく履歴はまだありません。</p>
           )}
         </div>
       </CardContent>

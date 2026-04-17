@@ -1,5 +1,6 @@
 import type { Route } from "next";
 import { canAccess } from "@/lib/roles";
+import { filterSearchLogsByRetention, sanitizeSearchQuery } from "@/lib/search-log-sanitizer";
 import { scoreText } from "@/lib/utils";
 import type {
   ApprovalStatus,
@@ -26,7 +27,7 @@ export function createInitialPortalState(seed: PortalContentState): PortalConten
     announcements: [...seed.announcements],
     quickLinks: [...seed.quickLinks],
     auditLogs: [...seed.auditLogs],
-    searchLogs: [...seed.searchLogs]
+    searchLogs: filterSearchLogsByRetention([...seed.searchLogs])
   };
 }
 
@@ -137,9 +138,10 @@ export function createSearchLog(params: {
   surface: SearchLog["surface"];
   resultCount: number;
 }): SearchLog {
+  const { sanitized } = sanitizeSearchQuery(params.query.trim());
   return {
     id: `search-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    query: params.query.trim(),
+    query: sanitized,
     surface: params.surface,
     resultCount: params.resultCount,
     timestamp: new Date().toISOString()

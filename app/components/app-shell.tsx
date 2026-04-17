@@ -12,11 +12,14 @@ export function AppShell({
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto flex max-w-7xl flex-col gap-4 px-3 py-4 sm:gap-6 sm:px-4 sm:py-6 lg:gap-8 lg:py-8">
-        <section className="rounded-2xl border border-white/80 bg-gradient-to-r from-ink to-slate-700 px-4 py-5 text-white shadow-panel sm:rounded-3xl sm:px-6 sm:py-8">
-          <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.2em] text-teal-100 sm:mb-2 sm:text-sm">NaviDeskApp 社内運用基盤</p>
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">{title}</h1>
-          <p className="mt-2 max-w-3xl text-xs leading-5 text-slate-200 sm:mt-3 sm:text-sm sm:leading-6">{description}</p>
+      <main className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-5 sm:gap-6 sm:py-7 lg:gap-8 lg:py-8">
+        <section className="rounded-xl border border-line-subtle bg-hero-gradient px-5 py-6 sm:px-8 sm:py-8">
+          <p className="mb-2 text-xs font-medium text-text-muted">社内ナレッジポータル</p>
+          <h1 className="text-2xl font-bold text-text-primary sm:text-3xl lg:text-4xl">{title}</h1>
+          <div className="mt-3 flex items-start gap-3 sm:mt-4">
+            <div className="mt-1.5 w-0.5 shrink-0 self-stretch bg-gradient-to-b from-accent-teal/50 to-transparent rounded-full" />
+            <p className="text-sm leading-7 text-text-secondary">{description}</p>
+          </div>
         </section>
         {children}
       </main>

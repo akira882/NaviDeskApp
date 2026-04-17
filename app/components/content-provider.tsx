@@ -47,11 +47,11 @@ type ReviewFields = {
 
 type ArticleInput = Omit<
   Article,
-  "id" | "updatedAt" | "updatedBy" | "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy"
+  "id" | "updatedAt" | "updatedBy" | "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy" | "helpfulCount" | "notHelpfulCount"
 >;
 type FaqInput = Omit<
   FAQ,
-  "id" | "updatedAt" | "updatedBy" | "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy"
+  "id" | "updatedAt" | "updatedBy" | "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy" | "helpfulCount" | "notHelpfulCount"
 >;
 type AnnouncementInput = Omit<
   Announcement,
@@ -87,6 +87,8 @@ type ContentContextValue = PortalContentState & {
   updateQuickLink: (id: string, input: QuickLinkInput, role: Role) => void;
   deleteQuickLink: (id: string, role: Role) => void;
   recordSearch: (params: { query: string; surface: "home" | "faq" | "ai-guide"; resultCount: number }) => void;
+  markArticleHelpful: (id: string, helpful: boolean) => void;
+  markFaqHelpful: (id: string, helpful: boolean) => void;
 };
 
 type ActorIdByRole = Record<Role, string>;
@@ -388,7 +390,9 @@ export function ContentProvider({
             {
               ...input,
               id,
-              status: nextStatus
+              status: nextStatus,
+              helpfulCount: 0,
+              notHelpfulCount: 0
             },
             getReviewFieldsForSave(role, nextStatus, timestamp, actorId),
             timestamp,
@@ -530,7 +534,9 @@ export function ContentProvider({
             {
               ...input,
               id,
-              status: nextStatus
+              status: nextStatus,
+              helpfulCount: 0,
+              notHelpfulCount: 0
             },
             getReviewFieldsForSave(role, nextStatus, timestamp, actorId),
             timestamp,
@@ -912,6 +918,34 @@ export function ContentProvider({
         setState((current) => ({
           ...current,
           searchLogs: [createSearchLog(params), ...current.searchLogs].slice(0, 100)
+        }));
+      },
+      markArticleHelpful(id, helpful) {
+        setState((current) => ({
+          ...current,
+          articles: current.articles.map((article) =>
+            article.id === id
+              ? {
+                  ...article,
+                  helpfulCount: helpful ? article.helpfulCount + 1 : article.helpfulCount,
+                  notHelpfulCount: helpful ? article.notHelpfulCount : article.notHelpfulCount + 1
+                }
+              : article
+          )
+        }));
+      },
+      markFaqHelpful(id, helpful) {
+        setState((current) => ({
+          ...current,
+          faqs: current.faqs.map((faq) =>
+            faq.id === id
+              ? {
+                  ...faq,
+                  helpfulCount: helpful ? faq.helpfulCount + 1 : faq.helpfulCount,
+                  notHelpfulCount: helpful ? faq.notHelpfulCount : faq.notHelpfulCount + 1
+                }
+              : faq
+          )
         }));
       }
     };

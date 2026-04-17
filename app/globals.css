@@ -3,29 +3,117 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   --font-body: "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans CJK JP", sans-serif;
   --font-heading: "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans CJK JP", sans-serif;
+  --font-mono: "JetBrains Mono", "Menlo", "Monaco", "Consolas", monospace;
 }
 
 body {
-  @apply min-h-screen bg-slate-50 bg-page-grid [background-size:24px_24px] text-slate-900;
+  @apply min-h-screen bg-ink text-text-secondary antialiased;
+  background-image:
+    linear-gradient(rgba(39, 196, 179, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(39, 196, 179, 0.018) 1px, transparent 1px);
+  background-size: 28px 28px;
   font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.7;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
+  @apply font-semibold tracking-tight text-text-primary;
   font-family: var(--font-heading);
+  line-height: 1.35;
 }
 
 a {
-  @apply text-inherit no-underline;
+  @apply text-inherit no-underline transition-colors;
 }
 
 ::selection {
-  @apply bg-teal-100 text-ink;
+  @apply bg-accent-teal/20 text-accent-teal;
+}
+
+:focus-visible {
+  @apply outline-none ring-2 ring-accent-teal/50 ring-offset-1 ring-offset-ink;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { @apply bg-ink; }
+::-webkit-scrollbar-thumb { @apply bg-line-mid rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-line-strong; }
+
+/* ============================================================
+   印刷 / PDF 保存レイアウト
+   @media print で社内マニュアル記事を読みやすく整形する
+   ============================================================ */
+@media print {
+  @page {
+    margin: 20mm 18mm;
+    size: A4;
+  }
+
+  /* ナビ・サイドバー・ボタン類を非表示 */
+  header,
+  aside,
+  nav,
+  button,
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  /* ページ全体をライトモードに */
+  body {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #1a1a1a !important;
+    font-size: 10.5pt;
+    line-height: 1.75;
+  }
+
+  /* 見出し */
+  h1, h2, h3, h4, h5, h6 {
+    color: #111111 !important;
+    page-break-after: avoid;
+  }
+
+  /* 本文・補足テキスト */
+  p, li, td, th {
+    color: #222222 !important;
+  }
+
+  /* カード: ダーク背景と影を除去 */
+  [class*="bg-surface"],
+  [class*="bg-ink"] {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ボーダーを印刷向けに */
+  [class*="border-"] {
+    border-color: #d0d0d0 !important;
+  }
+
+  /* グリッドを1列に */
+  [data-article-grid] {
+    display: block !important;
+  }
+
+  /* 記事コンテンツを全幅に */
+  article {
+    max-width: 100% !important;
+  }
+
+  /* リンクは色なし・下線なし */
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  /* 改ページ制御 */
+  article > * {
+    page-break-inside: avoid;
+  }
 }

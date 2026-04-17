@@ -21,14 +21,14 @@ export function CategoriesClient({ categories }: { categories: Category[] }) {
 
         return (
           <Link key={category.id} href={`/categories/${category.slug}` as Route}>
-            <Card className="h-full transition hover:-translate-y-0.5">
+            <Card className="h-full hover:-translate-y-0.5">
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-ink">{category.name}</h2>
+                  <h2 className="text-lg font-semibold text-text-primary">{category.name}</h2>
                   <Badge>{count}件</Badge>
                 </div>
-                <p className="text-sm leading-6 text-slate-600">{category.description}</p>
-                <p className="text-sm text-slate-500">主管部門: {category.ownerDepartment}</p>
+                <p className="text-sm leading-6 text-text-secondary">{category.description}</p>
+                <p className="text-sm text-text-muted">主管部門: {category.ownerDepartment}</p>
               </CardContent>
             </Card>
           </Link>

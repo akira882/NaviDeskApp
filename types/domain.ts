@@ -41,6 +41,9 @@ export type Article = {
   reviewedBy: string | null;
   updatedAt: string;
   updatedBy: string;
+  helpfulCount: number;
+  notHelpfulCount: number;
+  ownerId: string | null;
 };
 
 export type FAQ = {
@@ -57,6 +60,8 @@ export type FAQ = {
   reviewedBy: string | null;
   updatedAt: string;
   updatedBy: string;
+  helpfulCount: number;
+  notHelpfulCount: number;
 };
 
 export type Announcement = {

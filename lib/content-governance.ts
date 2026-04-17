@@ -1,6 +1,51 @@
 import { formatDate } from "@/lib/utils";
 import type { Announcement, Article, FAQ } from "@/types/domain";
 
+export type FeedbackFlagItem = {
+  id: string;
+  kind: "article" | "faq";
+  title: string;
+  helpfulCount: number;
+  notHelpfulCount: number;
+  notHelpfulRate: number;
+};
+
+export function listFeedbackFlaggedItems(params: { articles: Article[]; faqs: FAQ[] }): FeedbackFlagItem[] {
+  const MIN_VOTES = 5;
+  const FLAG_THRESHOLD = 0.3;
+
+  const items: FeedbackFlagItem[] = [
+    ...params.articles
+      .filter((a) => {
+        const total = a.helpfulCount + a.notHelpfulCount;
+        return total >= MIN_VOTES && a.notHelpfulCount / total >= FLAG_THRESHOLD;
+      })
+      .map((a) => ({
+        id: a.id,
+        kind: "article" as const,
+        title: a.title,
+        helpfulCount: a.helpfulCount,
+        notHelpfulCount: a.notHelpfulCount,
+        notHelpfulRate: a.notHelpfulCount / (a.helpfulCount + a.notHelpfulCount)
+      })),
+    ...params.faqs
+      .filter((f) => {
+        const total = f.helpfulCount + f.notHelpfulCount;
+        return total >= MIN_VOTES && f.notHelpfulCount / total >= FLAG_THRESHOLD;
+      })
+      .map((f) => ({
+        id: f.id,
+        kind: "faq" as const,
+        title: f.question,
+        helpfulCount: f.helpfulCount,
+        notHelpfulCount: f.notHelpfulCount,
+        notHelpfulRate: f.notHelpfulCount / (f.helpfulCount + f.notHelpfulCount)
+      }))
+  ];
+
+  return items.sort((a, b) => b.notHelpfulRate - a.notHelpfulRate);
+}
+
 type GovernedContent = Article | FAQ | Announcement;
 
 export type FreshnessStatus = "healthy" | "warning" | "critical";
@@ -91,9 +136,9 @@ function mapItem(
 export function getFreshnessTone(status: FreshnessStatus) {
   return (
     {
-      healthy: "bg-emerald-50 text-emerald-800",
-      warning: "bg-amber-50 text-amber-900",
-      critical: "bg-rose-50 text-rose-800"
+      healthy: "bg-accent-green/10 text-accent-green border-accent-green/20",
+      warning: "bg-accent-gold/10 text-accent-gold border-accent-gold/20",
+      critical: "bg-accent-crimson/10 text-accent-crimson border-accent-crimson/20"
     } satisfies Record<FreshnessStatus, string>
   )[status];
 }

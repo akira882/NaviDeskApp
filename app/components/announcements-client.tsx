@@ -19,10 +19,10 @@ export function AnnouncementsClient() {
           <CardContent className="space-y-3">
             <div className="flex items-center gap-2">
               <Badge>公開中</Badge>
-              <span className="text-xs text-slate-500">{formatDate(announcement.publishedAt)}</span>
+              <span className="text-xs text-text-muted">{formatDate(announcement.publishedAt)}</span>
             </div>
-            <h2 className="text-2xl font-semibold text-ink">{announcement.title}</h2>
-            <p className="text-sm leading-7 text-slate-700">{announcement.body}</p>
+            <h2 className="text-xl font-semibold text-text-primary">{announcement.title}</h2>
+            <p className="text-sm leading-7 text-text-secondary">{announcement.body}</p>
           </CardContent>
         </Card>
       ))}

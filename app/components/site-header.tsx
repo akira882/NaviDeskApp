@@ -2,16 +2,24 @@
 
 import type { Route } from "next";
 import Link from "next/link";
-import { LayoutDashboard, ListChecks, MessageSquareText, Newspaper, Search, ShieldCheck } from "lucide-react";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  ListChecks,
+  MessageSquareText,
+  Newspaper,
+  Search,
+  ShieldCheck,
+  Bot
+} from "lucide-react";
 
 import { getRoleLabel } from "@/lib/roles";
 import { useRole } from "@/components/role-provider";
-import { Badge } from "@/components/ui/badge";
 
 const navItems: Array<{ href: Route; label: string; icon: typeof Search }> = [
   { href: "/", label: "ホーム", icon: Search },
   { href: "/tasks", label: "タスクハブ", icon: ListChecks },
-  { href: "/ai-guide", label: "AI案内", icon: Search },
+  { href: "/ai-guide", label: "AI案内", icon: Bot },
   { href: "/categories", label: "カテゴリ", icon: LayoutDashboard },
   { href: "/faq", label: "FAQ検索", icon: MessageSquareText },
   { href: "/announcements", label: "お知らせ", icon: Newspaper },
@@ -20,38 +28,62 @@ const navItems: Array<{ href: Route; label: string; icon: typeof Search }> = [
 
 export function SiteHeader() {
   const { role } = useRole();
+  const pathname = usePathname();
+
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  }
 
   return (
-    <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-3 py-3 sm:px-4 sm:py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+    <header className="sticky top-0 z-50 border-b border-line-subtle bg-ink-soft/95 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+        {/* Logo */}
         <div className="flex items-center justify-between">
-          <Link href="/" className="block rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700">
-            <p className="text-lg font-semibold tracking-tight text-ink sm:text-xl">Navidesk</p>
-            <p className="hidden text-sm text-slate-500 sm:block">社内業務のためのナレッジ運用ポータル</p>
+          <Link href="/" className="flex items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-teal text-ink text-sm font-bold">
+              ND
+            </div>
+            <span className="text-base font-bold text-text-primary">Navidesk</span>
           </Link>
+          {/* Mobile role */}
           <div className="flex items-center gap-2 lg:hidden">
-            <span className="text-xs text-slate-500">ロール</span>
-            <Badge className="bg-teal-50 text-xs">{getRoleLabel(role)}</Badge>
+            <span className="text-xs text-text-muted">ロール</span>
+            <span className="rounded border border-accent-teal/25 bg-accent-teal/10 px-2 py-0.5 text-xs font-medium text-accent-teal">
+              {getRoleLabel(role)}
+            </span>
           </div>
         </div>
-        <nav className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
+
+        {/* Nav */}
+        <nav className="flex flex-wrap gap-0.5">
           {navItems.map((item) => {
             const Icon = item.icon;
+            const active = isActive(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-xs text-slate-600 transition hover:bg-slate-100 hover:text-ink sm:gap-2 sm:px-3 sm:text-sm"
+                className={[
+                  "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-all duration-150",
+                  active
+                    ? "bg-accent-teal/10 text-accent-teal border border-accent-teal/20"
+                    : "text-text-muted border border-transparent hover:bg-surface-1 hover:text-text-secondary hover:border-line-subtle"
+                ].join(" ")}
               >
-                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span className="truncate">{item.label}</span>
+                <Icon className="h-4 w-4 shrink-0" />
+                <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
-        <div className="hidden items-center gap-3 lg:flex">
-          <span className="text-sm text-slate-500">セッションロール</span>
-          <Badge className="bg-teal-50">{getRoleLabel(role)}</Badge>
+
+        {/* Desktop role */}
+        <div className="hidden items-center gap-2 lg:flex">
+          <span className="text-xs text-text-muted">ロール</span>
+          <span className="rounded border border-accent-teal/25 bg-accent-teal/10 px-2 py-0.5 text-xs font-medium text-accent-teal">
+            {getRoleLabel(role)}
+          </span>
         </div>
       </div>
     </header>

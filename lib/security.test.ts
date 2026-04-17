@@ -4,6 +4,7 @@ import path from "node:path";
 import { glob } from "glob";
 
 import { articles, faqs, announcements } from "@/data/mock/seed";
+import { filterSearchLogsByRetention, sanitizeSearchQuery } from "@/lib/search-log-sanitizer";
 
 /**
  * Security Test Suite
@@ -151,6 +152,40 @@ describe("セキュリティヘッダー", () => {
     expect(content).toContain("Strict-Transport-Security");
     expect(content).toContain("X-Frame-Options");
     expect(content).toContain("X-Content-Type-Options");
+  });
+});
+
+describe("PII保護 (検索ログサニタイズ)", () => {
+  it("メールアドレスが検索クエリから除去される", () => {
+    const { sanitized } = sanitizeSearchQuery("user@example.com のアカウント設定");
+    expect(sanitized).not.toMatch(/@/);
+    expect(sanitized).toContain("[メールアドレス]");
+  });
+
+  it("社員番号が検索クエリから除去される", () => {
+    const { sanitized } = sanitizeSearchQuery("E12345 の申請");
+    expect(sanitized).not.toContain("E12345");
+  });
+
+  it("氏名+役職が検索クエリから除去される", () => {
+    const { sanitized } = sanitizeSearchQuery("田中部長の承認が必要");
+    expect(sanitized).not.toContain("田中");
+    expect(sanitized).toContain("[氏名]");
+  });
+
+  it("通常の業務クエリはサニタイズされない", () => {
+    const { wasSanitized } = sanitizeSearchQuery("VPN 接続できない 手順");
+    expect(wasSanitized).toBe(false);
+  });
+
+  it("90日超の検索ログが保持期間フィルターで除外される", () => {
+    const old = new Date(Date.now() - 91 * 24 * 60 * 60 * 1000).toISOString();
+    const recent = new Date().toISOString();
+    const result = filterSearchLogsByRetention([
+      { id: "old", timestamp: old },
+      { id: "new", timestamp: recent }
+    ]);
+    expect(result.map((l) => l.id)).toEqual(["new"]);
   });
 });
 

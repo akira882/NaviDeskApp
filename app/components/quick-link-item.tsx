@@ -16,8 +16,8 @@ export function QuickLinkItem({
   if (isExternalQuickLink(link.url)) {
     return (
       <a href={link.url} target="_blank" rel="noreferrer" className={className}>
-        <p className="text-sm font-medium text-ink sm:text-base">{link.label}</p>
-        <p className="mt-1 text-xs text-slate-600 sm:text-sm">{link.description}</p>
+        <p className="text-sm font-medium text-text-primary">{link.label}</p>
+        <p className="mt-0.5 text-xs text-text-muted">{link.description}</p>
       </a>
     );
   }
@@ -25,16 +25,16 @@ export function QuickLinkItem({
   if (!isInternalQuickLink(link.url)) {
     return (
       <div className={className}>
-        <p className="text-sm font-medium text-ink sm:text-base">{link.label}</p>
-        <p className="mt-1 text-xs text-rose-700 sm:text-sm">リンク設定が不正です。管理画面から確認してください。</p>
+        <p className="text-sm font-medium text-text-primary">{link.label}</p>
+        <p className="mt-0.5 text-xs text-accent-crimson">リンク設定が不正です。管理画面から確認してください。</p>
       </div>
     );
   }
 
   return (
     <Link href={link.url as Route} className={className}>
-      <p className="text-sm font-medium text-ink sm:text-base">{link.label}</p>
-      <p className="mt-1 text-xs text-slate-600 sm:text-sm">{link.description}</p>
+      <p className="text-sm font-medium text-text-primary">{link.label}</p>
+      <p className="mt-0.5 text-xs text-text-muted">{link.description}</p>
     </Link>
   );
 }

@@ -14,7 +14,7 @@ export function Th({
   return (
     <th
       className={cn(
-        "border-b border-line-subtle px-4 py-3 text-left font-semibold text-ink",
+        "border-b border-line-subtle px-4 py-3 text-left text-xs font-semibold text-text-muted",
         className
       )}
     >
@@ -24,5 +24,9 @@ export function Th({
 }
 
 export function Td({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <td className={cn("border-b border-line-subtle px-4 py-3 align-top text-slate-700", className)}>{children}</td>;
+  return (
+    <td className={cn("border-b border-line-subtle/50 px-4 py-3 align-top text-sm text-text-secondary", className)}>
+      {children}
+    </td>
+  );
 }
