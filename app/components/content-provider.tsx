@@ -47,7 +47,7 @@ type ReviewFields = {
 
 type ArticleInput = Omit<
   Article,
-  "id" | "updatedAt" | "updatedBy" | "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy" | "helpfulCount" | "notHelpfulCount"
+  "id" | "updatedAt" | "updatedBy" | "approvalStatus" | "reviewComment" | "reviewedAt" | "reviewedBy" | "helpfulCount" | "notHelpfulCount" | "ownerId"
 >;
 type FaqInput = Omit<
   FAQ,
@@ -392,7 +392,8 @@ export function ContentProvider({
               id,
               status: nextStatus,
               helpfulCount: 0,
-              notHelpfulCount: 0
+              notHelpfulCount: 0,
+              ownerId: actorId
             },
             getReviewFieldsForSave(role, nextStatus, timestamp, actorId),
             timestamp,
