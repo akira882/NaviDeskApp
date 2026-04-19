@@ -47,9 +47,9 @@ function buildImprovementReport(params: {
   ].join("\n");
 }
 
-export function AiGuideClient() {
+export function AiGuideClient({ initialQuestion = "" }: { initialQuestion?: string }) {
   const { role } = useRole();
-  const [question, setQuestion] = useState("");
+  const [question, setQuestion] = useState(initialQuestion);
   const [result, setResult] = useState<AiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showReportForm, setShowReportForm] = useState(false);

@@ -100,6 +100,7 @@ export function HomeClient({ categories }: { categories: Category[] }) {
           {trimmedQuery ? (
             <SearchResults
               results={previewResults}
+              query={trimmedQuery}
               footer={
                 hasMore ? (
                   <Link

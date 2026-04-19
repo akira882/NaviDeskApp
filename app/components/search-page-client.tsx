@@ -76,7 +76,7 @@ export function SearchPageClient({
           <p className="text-sm text-text-secondary">
             「<span className="font-semibold text-text-primary">{trimmedQuery}</span>」の検索結果：{results.length}件
           </p>
-          <SearchResults results={results} />
+          <SearchResults results={results} query={trimmedQuery} />
         </>
       ) : (
         <Card>

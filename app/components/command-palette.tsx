@@ -12,6 +12,7 @@ import {
   useRef,
   useState
 } from "react";
+import { Bot } from "lucide-react";
 
 import { useContent } from "@/components/content-provider";
 import { useRole } from "@/components/role-provider";
@@ -199,12 +200,27 @@ function CommandPaletteDialog({
               記事、FAQ、お知らせを横断検索します。↑↓で移動、Enterで開く、ESCで閉じます。
             </p>
           ) : results.length === 0 ? (
-            <div className="space-y-2 p-5 text-sm text-text-secondary">
-              <p>一致する結果が見つかりませんでした。</p>
+            <div className="space-y-3 p-4 text-sm">
+              <p className="text-text-secondary">一致する結果が見つかりませんでした。</p>
+              {/* AI案内への主導線 */}
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  router.push(`/ai-guide?q=${encodeURIComponent(trimmedQuery)}` as Route);
+                }}
+                className="flex w-full items-center gap-2.5 rounded-lg border border-accent-teal/30 bg-accent-teal/5 px-3 py-2.5 text-left transition-colors hover:border-accent-teal/50 hover:bg-accent-teal/10"
+              >
+                <Bot className="h-4 w-4 shrink-0 text-accent-teal" aria-hidden />
+                <span className="text-accent-teal">
+                  AI案内で「{trimmedQuery}」を調べる →
+                </span>
+              </button>
+              {/* 検索ページへの二次導線 */}
               <button
                 type="button"
                 onClick={() => goToSearchPage(trimmedQuery)}
-                className="text-accent-teal hover:underline underline-offset-4"
+                className="block text-xs text-text-muted transition-colors hover:text-accent-teal"
               >
                 「{trimmedQuery}」で検索ページを開く →
               </button>
