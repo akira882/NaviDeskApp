@@ -5,7 +5,7 @@
 :root {
   color-scheme: dark;
   --font-body: "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans CJK JP", sans-serif;
-  --font-heading: "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans CJK JP", sans-serif;
+  --font-display: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "YuGothic", "Meiryo", "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
   --font-mono: "JetBrains Mono", "Menlo", "Monaco", "Consolas", monospace;
 }
 

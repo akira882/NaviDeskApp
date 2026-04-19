@@ -99,7 +99,7 @@ export type AuditLog = {
   detail: string;
 };
 
-export type SearchSurface = "home" | "faq" | "ai-guide";
+export type SearchSurface = "home" | "faq" | "ai-guide" | "search-page";
 
 export type SearchLog = {
   id: string;

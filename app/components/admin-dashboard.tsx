@@ -23,7 +23,7 @@ import {
   type FAQFormValues,
   type QuickLinkFormValues
 } from "@/lib/schemas";
-import { listFailedSearchThemes } from "@/lib/content-helpers";
+import { listFailedSearchThemes, searchSurfaceLabel } from "@/lib/content-helpers";
 import { getFreshnessLabel, getFreshnessStatus, getFreshnessTone, listFeedbackFlaggedItems, listReviewPriorityItems } from "@/lib/content-governance";
 import { canApproveContent } from "@/lib/roles";
 import { formatDate, splitTags } from "@/lib/utils";
@@ -268,7 +268,7 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Badge className="bg-accent-crimson/10 text-accent-crimson">検索失敗 {item.count}回</Badge>
-                      <Badge className="border-line-mid bg-surface-2 text-text-muted">{item.surface === "home" ? "ホーム検索" : item.surface === "faq" ? "FAQ検索" : "AI案内"}</Badge>
+                      <Badge className="border-line-mid bg-surface-2 text-text-muted">{searchSurfaceLabel(item.surface)}</Badge>
                     </div>
                     <p className="font-medium text-text-primary">{item.query}</p>
                     <p className="text-xs text-text-muted">最終検索: {formatDate(item.lastSearchedAt)}</p>

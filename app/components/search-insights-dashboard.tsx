@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { listReviewPriorityItems } from "@/lib/content-governance";
-import { listFailedSearchThemes } from "@/lib/content-helpers";
+import { listFailedSearchThemes, searchSurfaceLabel } from "@/lib/content-helpers";
 import { listSearchImprovementCandidates } from "@/lib/search-insights";
 import { formatDateTime } from "@/lib/utils";
 import type { Announcement, Article, FAQ, SearchLog } from "@/types/domain";
@@ -48,7 +48,7 @@ export function SearchInsightsDashboard({
                       ゼロ件 {candidate.count}回
                     </Badge>
                     <Badge className="border-line-mid bg-surface-1 text-text-muted">
-                      {candidate.surface === "home" ? "ホーム検索" : candidate.surface === "faq" ? "FAQ検索" : "AI案内"}
+                      {searchSurfaceLabel(candidate.surface)}
                     </Badge>
                   </div>
                   <p className="mt-3 text-base font-semibold text-text-primary">{candidate.query}</p>

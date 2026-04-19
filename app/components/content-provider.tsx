@@ -35,7 +35,8 @@ import type {
   FAQ,
   PortalContentState,
   QuickLink,
-  Role
+  Role,
+  SearchSurface
 } from "@/types/domain";
 
 type ReviewFields = {
@@ -86,7 +87,7 @@ type ContentContextValue = PortalContentState & {
   addQuickLink: (input: QuickLinkInput, role: Role) => void;
   updateQuickLink: (id: string, input: QuickLinkInput, role: Role) => void;
   deleteQuickLink: (id: string, role: Role) => void;
-  recordSearch: (params: { query: string; surface: "home" | "faq" | "ai-guide"; resultCount: number }) => void;
+  recordSearch: (params: { query: string; surface: SearchSurface; resultCount: number }) => void;
   markArticleHelpful: (id: string, helpful: boolean) => void;
   markFaqHelpful: (id: string, helpful: boolean) => void;
 };

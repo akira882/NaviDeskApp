@@ -15,6 +15,7 @@ import {
 
 import { getRoleLabel } from "@/lib/roles";
 import { useRole } from "@/components/role-provider";
+import { useCommandPalette } from "@/components/command-palette";
 
 const navItems: Array<{ href: Route; label: string; icon: typeof Search }> = [
   { href: "/", label: "ホーム", icon: Search },
@@ -29,6 +30,7 @@ const navItems: Array<{ href: Route; label: string; icon: typeof Search }> = [
 export function SiteHeader() {
   const { role } = useRole();
   const pathname = usePathname();
+  const { open: openCommandPalette } = useCommandPalette();
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -43,8 +45,16 @@ export function SiteHeader() {
           <Link href="/" className="flex items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50">
             <span className="text-2xl font-extrabold tracking-tighter text-text-primary">NaviDesk</span>
           </Link>
-          {/* Mobile role */}
+          {/* Mobile actions */}
           <div className="flex items-center gap-2 lg:hidden">
+            <button
+              type="button"
+              onClick={openCommandPalette}
+              aria-label="検索を開く"
+              className="inline-flex items-center justify-center rounded-lg border border-line-subtle bg-surface-1 p-1.5 text-text-muted transition-colors hover:bg-surface-2 hover:text-text-secondary"
+            >
+              <Search className="h-4 w-4" />
+            </button>
             <span className="text-xs text-text-muted">ロール</span>
             <span className="rounded border border-accent-teal/25 bg-accent-teal/10 px-2 py-0.5 text-xs font-medium text-accent-teal">
               {getRoleLabel(role)}
@@ -75,12 +85,25 @@ export function SiteHeader() {
           })}
         </nav>
 
-        {/* Desktop role */}
-        <div className="hidden items-center gap-2 lg:flex">
-          <span className="text-xs text-text-muted">ロール</span>
-          <span className="rounded border border-accent-teal/25 bg-accent-teal/10 px-2 py-0.5 text-xs font-medium text-accent-teal">
-            {getRoleLabel(role)}
-          </span>
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-3 lg:flex">
+          <button
+            type="button"
+            onClick={openCommandPalette}
+            aria-label="検索を開く"
+            title="検索 (⌘K)"
+            className="inline-flex items-center gap-2 rounded-lg border border-line-subtle bg-surface-1 px-3 py-1.5 text-sm text-text-muted transition-colors hover:bg-surface-2 hover:text-text-secondary"
+          >
+            <Search className="h-4 w-4" />
+            <span>検索</span>
+            <kbd className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px]">⌘K</kbd>
+          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-text-muted">ロール</span>
+            <span className="rounded border border-accent-teal/25 bg-accent-teal/10 px-2 py-0.5 text-xs font-medium text-accent-teal">
+              {getRoleLabel(role)}
+            </span>
+          </div>
         </div>
       </div>
     </header>

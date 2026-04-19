@@ -13,6 +13,7 @@ import type {
   Role,
   SearchLog,
   SearchResult,
+  SearchSurface,
   User
 } from "@/types/domain";
 
@@ -75,7 +76,8 @@ export function searchContent(
   state: PortalContentState,
   categories: Category[],
   query: string,
-  role: Role
+  role: Role,
+  options?: { limit?: number }
 ): SearchResult[] {
   if (!query.trim()) {
     return [];
@@ -108,7 +110,20 @@ export function searchContent(
   return [...articleResults, ...faqResults]
     .filter((result) => result.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 6);
+    .slice(0, options?.limit ?? 6);
+}
+
+export function searchSurfaceLabel(surface: SearchSurface): string {
+  switch (surface) {
+    case "home":
+      return "ホーム検索";
+    case "faq":
+      return "FAQ検索";
+    case "ai-guide":
+      return "AI案内";
+    case "search-page":
+      return "検索ページ";
+  }
 }
 
 export function buildAuditLog(params: {

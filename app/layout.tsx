@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 
 import "@/app/globals.css";
+import { CommandPaletteProvider } from "@/components/command-palette";
 import { ContentProvider } from "@/components/content-provider";
 import { RoleProvider } from "@/components/role-provider";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { userRepository } from "@/data/repositories/content-repository";
+import { categoryRepository, userRepository } from "@/data/repositories/content-repository";
 import { buildInitialStateForRole } from "@/lib/server/initial-state";
 import { getSessionRole } from "@/lib/server/session";
 import type { Role } from "@/types/domain";
@@ -27,6 +28,7 @@ export default function RootLayout({
   const actorIdByRole = Object.fromEntries(
     userRepository.listUsers().map((user) => [user.role, user.id])
   ) as Record<Role, string>;
+  const categories = categoryRepository.list();
 
   return (
     <html lang="ja" className="dark">
@@ -34,7 +36,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <RoleProvider initialRole={role}>
             <ContentProvider initialState={initialState} actorIdByRole={actorIdByRole}>
-              {children}
+              <CommandPaletteProvider categories={categories}>{children}</CommandPaletteProvider>
             </ContentProvider>
           </RoleProvider>
         </ErrorBoundary>

@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { HomeClient } from "@/components/home-client";
+import { HomeClient } from "@/components/home-client.v2";
 import { categoryRepository } from "@/data/repositories/content-repository";
 
 export default function HomePage() {

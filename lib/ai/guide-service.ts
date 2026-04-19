@@ -1,5 +1,6 @@
 import { mockGuideProvider } from "@/lib/ai/providers/mock-guide-provider";
 import { bedrockGuideProvider } from "@/lib/ai/providers/bedrock-guide-provider";
+import { geminiGuideProvider } from "@/lib/ai/providers/gemini-guide-provider";
 import { env } from "@/lib/env";
 import type { AiResponse, Category, PortalContentState, Role } from "@/types/domain";
 
@@ -31,8 +32,7 @@ export async function answerGuideAsync(request: GuideRequest): Promise<AiRespons
       case "bedrock":
         return await bedrockGuideProvider(request);
       case "gemini":
-        console.warn("Gemini provider is not implemented. Falling back to mock guide provider.");
-        return mockGuideProvider(request);
+        return await geminiGuideProvider(request);
       case "mock":
       default:
         return mockGuideProvider(request);
