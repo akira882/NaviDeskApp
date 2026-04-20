@@ -20,15 +20,15 @@ export function canViewAuditLog(role: Role) {
 }
 
 export function canApproveContent(role: Role) {
-  return role === "admin";
+  return role === "admin" || role === "manager";
 }
 
 export function getRoleLabel(role: Role) {
   return (
     {
       employee: "一般社員",
-      manager: "管理職",
-      editor: "編集担当",
+      manager: "部門管理職",
+      editor: "コンテンツ編集担当",
       admin: "管理者"
     } satisfies Record<Role, string>
   )[role];
