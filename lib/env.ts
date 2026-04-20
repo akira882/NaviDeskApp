@@ -4,7 +4,7 @@ import { roles } from "@/types/domain";
 const envSchema = z.object({
   GEMINI_API_KEY: z.string().optional(),
   NAVIDESK_AI_PROVIDER: z.enum(["mock", "gemini", "bedrock"]).optional().default("mock"),
-  NAVIDESK_SESSION_ROLE: z.enum(roles).optional().default("employee"),
+  NAVIDESK_SESSION_ROLE: z.enum(roles).optional().default("admin"),
   AWS_REGION: z.string().optional().default("us-east-1"),
   AWS_BEDROCK_MODEL_ID: z.string().optional().default("us.anthropic.claude-3-5-haiku-20241022-v1:0"),
   AWS_ACCESS_KEY_ID: z.string().optional(),
