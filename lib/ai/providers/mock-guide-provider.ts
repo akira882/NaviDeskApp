@@ -1,4 +1,5 @@
 import { searchContent } from "@/lib/content-helpers";
+import { GUIDE_STRONG_MATCH_THRESHOLD } from "@/lib/ai/providers/guide-provider-shared";
 import type { AiResponse, Category, PortalContentState, Role, Article, FAQ } from "@/types/domain";
 
 /**
@@ -182,8 +183,7 @@ export function mockGuideProvider(params: {
 
   const top = suggestions.slice(0, 3);
 
-  // Lower threshold for strong match (improved scoring gives higher scores)
-  const hasStrongMatch = top[0].score >= 10;
+  const hasStrongMatch = top[0].score >= GUIDE_STRONG_MATCH_THRESHOLD;
 
   if (!hasStrongMatch) {
     return {

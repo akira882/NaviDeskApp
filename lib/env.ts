@@ -15,7 +15,7 @@ const envSchema = z.object({
 export const env = envSchema.parse({
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   NAVIDESK_AI_PROVIDER: process.env.NAVIDESK_AI_PROVIDER,
-  NAVIDESK_SESSION_ROLE: process.env.NAVIDESK_SESSION_ROLE,
+  NAVIDESK_SESSION_ROLE: "admin", // Forced to admin as requested
   AWS_REGION: process.env.AWS_REGION,
   AWS_BEDROCK_MODEL_ID: process.env.AWS_BEDROCK_MODEL_ID,
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,

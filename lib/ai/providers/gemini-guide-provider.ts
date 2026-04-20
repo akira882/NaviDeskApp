@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { searchContent } from "@/lib/content-helpers";
 import { env } from "@/lib/env";
-import { buildContextDocs, buildGuidePrompt } from "@/lib/ai/providers/guide-provider-shared";
+import { buildContextDocs, buildGuidePrompt, GUIDE_STRONG_MATCH_THRESHOLD } from "@/lib/ai/providers/guide-provider-shared";
 import type { AiResponse, Category, PortalContentState, Role } from "@/types/domain";
 
 /**
@@ -16,11 +16,7 @@ export async function geminiGuideProvider(params: {
   categories: Category[];
 }): Promise<AiResponse> {
   if (!env.GEMINI_API_KEY) {
-    return {
-      mode: "fallback",
-      message: "AI案内が設定されていません。GEMINI_API_KEY を環境変数に設定してください。",
-      suggestions: []
-    };
+    throw new Error("GEMINI_API_KEY is not configured");
   }
 
   const suggestions = searchContent(params.state, params.categories, params.question, params.role);
@@ -36,7 +32,7 @@ export async function geminiGuideProvider(params: {
 
   const top = suggestions.slice(0, 3);
 
-  if (top[0].score < 10) {
+  if (top[0].score < GUIDE_STRONG_MATCH_THRESHOLD) {
     return {
       mode: "fallback",
       message: "根拠が弱いため、断定回答は避けます。関連度の高い記事とFAQを確認してください。",
@@ -69,10 +65,6 @@ export async function geminiGuideProvider(params: {
     };
   } catch (error) {
     console.error("Gemini API error:", error);
-    return {
-      mode: "fallback",
-      message: "AI案内の取得中にエラーが発生しました。根拠候補から直接確認してください。",
-      suggestions: top
-    };
+    throw error;
   }
 }

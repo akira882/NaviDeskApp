@@ -223,7 +223,9 @@ describe("content-repository", () => {
     it("returns fallback when no matches found", () => {
       const response = aiGuideRepository.answer("xyzabc123nonexistent", "employee");
       expect(response.mode).toBe("fallback");
-      expect(response.suggestions).toEqual([]);
+      if (response.mode === "fallback") {
+        expect(response.suggestions).toEqual([]);
+      }
     });
 
     it("returns fallback when match score is weak", () => {

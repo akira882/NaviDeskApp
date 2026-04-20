@@ -12,7 +12,7 @@ const RoleContext = createContext<RoleContextValue | null>(null);
 
 export function RoleProvider({
   children,
-  initialRole = "employee"
+  initialRole = "admin"
 }: {
   children: React.ReactNode;
   initialRole?: Role;

@@ -1,5 +1,7 @@
 import type { PortalContentState, SearchResult } from "@/types/domain";
 
+export const GUIDE_STRONG_MATCH_THRESHOLD = 6;
+
 export function buildContextDocs(top: SearchResult[], state: PortalContentState): string {
   return top
     .map((item, idx) => {

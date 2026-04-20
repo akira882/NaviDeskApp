@@ -33,6 +33,30 @@ describe("mockGuideProvider", () => {
     expect(result.mode).toBe("answer");
   });
 
+  it("returns answer for Japanese natural language query without spaces", () => {
+    // Regression: Japanese sentences have no whitespace, so CJK sequence extraction
+    // (Strategy 2b in scoreText) must fire to reach the answer threshold.
+    const result = mockGuideProvider({
+      question: "有給はどのように申請したらいいか？",
+      role: "employee",
+      state,
+      categories
+    });
+
+    expect(result.mode).toBe("answer");
+  });
+
+  it("returns answer for business trip procedure query", () => {
+    const result = mockGuideProvider({
+      question: "出張申請のやり方について解説してください",
+      role: "employee",
+      state,
+      categories
+    });
+
+    expect(result.mode).toBe("answer");
+  });
+
   it("returns fallback when no grounded content exists", () => {
     const result = mockGuideProvider({
       question: "宇宙旅行の精算ルール",

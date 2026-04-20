@@ -9,6 +9,8 @@ dist
 .env.test.local
 .env.production.local
 .claude
+*.yaml
+tsconfig.tsbuildinfo
 
 # Allow important documentation
 !README.md

@@ -39,10 +39,10 @@ function withSeedApproval<T extends { status: "draft" | "published" }>(
 }
 
 export const users: User[] = [
-  { id: "u-emp", name: "佐藤 美咲", department: "営業部", role: "employee" },
+  { id: "u-adm", name: "小清水晶", department: "情報システム部", role: "admin" },
+  { id: "u-emp", name: "佐藤 美咲", department: "営業部", role: "admin" },
   { id: "u-mgr", name: "田中 恒一", department: "営業部", role: "manager" },
-  { id: "u-edt", name: "高橋 由奈", department: "コーポレート企画", role: "editor" },
-  { id: "u-adm", name: "小清水晶", department: "情報システム部", role: "admin" }
+  { id: "u-edt", name: "高橋 由奈", department: "コーポレート企画", role: "editor" }
 ];
 
 export const categories: Category[] = [

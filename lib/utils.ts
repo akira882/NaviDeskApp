@@ -68,6 +68,16 @@ export function scoreText(query: string, text: string): number {
     }
   }
 
+  // Strategy 2b: CJK sequence extraction for Japanese natural language
+  // Japanese sentences have no spaces, so kanji/katakana runs are extracted as semantic units.
+  // Regex covers CJK Unified Ideographs + Katakana + CJK Extension A.
+  const cjkTokens = normalizedQuery.match(/[\u4e00-\u9fff\u30a0-\u30ff\u3400-\u4dbf]+/g) ?? [];
+  for (const token of cjkTokens) {
+    if (token.length >= 2 && normalizedText.includes(token)) {
+      score += 3;
+    }
+  }
+
   // Strategy 3: Character bigram matching (for Japanese text)
   const bigramsQuery = extractNgrams(normalizedQuery, 2);
   const bigramsText = extractNgrams(normalizedText, 2);

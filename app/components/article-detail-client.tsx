@@ -2,8 +2,10 @@
 
 import type { Route } from "next";
 import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 
 import { useContent } from "@/components/content-provider";
+import { INQUIRY_FORM_URL } from "@/lib/public-env";
 import { ContentGovernanceCard } from "@/components/content-governance-card";
 import { ArticleActionBar } from "@/components/article-action-bar";
 import { ArticleReferralBanner } from "@/components/article-referral-banner";
@@ -88,9 +90,21 @@ export function ArticleDetailClient({
             <p className="text-sm leading-6 text-text-secondary">
               記事の内容だけでは解決できない場合は、社内IT企画部門へお問い合わせください。
             </p>
-            <Link href="/articles/helpdesk-contact" className="inline-block text-sm text-accent-teal hover:underline underline-offset-4">
-              社内IT企画部門へ問い合わせ →
-            </Link>
+            {INQUIRY_FORM_URL ? (
+              <a
+                href={INQUIRY_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm text-accent-teal hover:underline underline-offset-4"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                社内IT企画部門へ問い合わせ
+              </a>
+            ) : (
+              <Link href="/articles/helpdesk-contact" className="inline-block text-sm text-accent-teal hover:underline underline-offset-4">
+                社内IT企画部門へ問い合わせ →
+              </Link>
+            )}
           </CardContent>
         </Card>
       </article>
