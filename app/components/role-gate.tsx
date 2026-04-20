@@ -29,9 +29,11 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
         <Link href="/admin/search-insights">
           <Button variant="secondary">検索分析を見る</Button>
         </Link>
-        <Link href="/admin/audit-log">
-          <Button variant="secondary">監査ログを見る</Button>
-        </Link>
+        {canViewAuditLog(role) && (
+          <Link href="/admin/audit-log">
+            <Button variant="secondary">監査ログを見る</Button>
+          </Link>
+        )}
       </div>
       {children}
     </div>

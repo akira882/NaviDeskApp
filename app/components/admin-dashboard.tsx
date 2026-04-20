@@ -565,27 +565,40 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                           >
                             公開切替
                           </Button>
-                          {article.approvalStatus === "pending" ? (
+                          {article.approvalStatus === "pending" && (
                             <Button
                               type="button"
                               size="sm"
-                              onClick={() => openReview({ kind: "article", id: article.id, title: article.title, approvalStatus: article.approvalStatus, updatedAt: article.updatedAt, reviewComment: article.reviewComment })}
+                              onClick={() =>
+                                openReview({
+                                  kind: "article",
+                                  id: article.id,
+                                  title: article.title,
+                                  approvalStatus: article.approvalStatus,
+                                  updatedAt: article.updatedAt,
+                                  reviewComment: article.reviewComment
+                                })
+                              }
                             >
                               レビュー
                             </Button>
-                          ) : null}
+                          )}
                         </>
-                      ) : article.approvalStatus !== "pending" ? (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => content.requestArticleReview(article.id, role)}
-                        >
-                          承認申請
-                        </Button>
                       ) : (
-                        <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
+                        <>
+                          {article.approvalStatus === "pending" ? (
+                            <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
+                          ) : (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => content.requestArticleReview(article.id, role)}
+                            >
+                              承認申請
+                            </Button>
+                          )}
+                        </>
                       )}
                       <Button
                         type="button"
@@ -715,22 +728,40 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                           >
                             公開切替
                           </Button>
-                          {faq.approvalStatus === "pending" ? (
+                          {faq.approvalStatus === "pending" && (
                             <Button
                               type="button"
                               size="sm"
-                              onClick={() => openReview({ kind: "faq", id: faq.id, title: faq.question, approvalStatus: faq.approvalStatus, updatedAt: faq.updatedAt, reviewComment: faq.reviewComment })}
+                              onClick={() =>
+                                openReview({
+                                  kind: "faq",
+                                  id: faq.id,
+                                  title: faq.question,
+                                  approvalStatus: faq.approvalStatus,
+                                  updatedAt: faq.updatedAt,
+                                  reviewComment: faq.reviewComment
+                                })
+                              }
                             >
                               レビュー
                             </Button>
-                          ) : null}
+                          )}
                         </>
-                      ) : faq.approvalStatus !== "pending" ? (
-                        <Button type="button" size="sm" variant="secondary" onClick={() => content.requestFaqReview(faq.id, role)}>
-                          承認申請
-                        </Button>
                       ) : (
-                        <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
+                        <>
+                          {faq.approvalStatus === "pending" ? (
+                            <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
+                          ) : (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => content.requestFaqReview(faq.id, role)}
+                            >
+                              承認申請
+                            </Button>
+                          )}
+                        </>
                       )}
                       <Button
                         type="button"
@@ -834,27 +865,40 @@ export function AdminDashboard({ categories }: { categories: Category[] }) {
                           >
                             公開切替
                           </Button>
-                          {announcement.approvalStatus === "pending" ? (
+                          {announcement.approvalStatus === "pending" && (
                             <Button
                               type="button"
                               size="sm"
-                              onClick={() => openReview({ kind: "announcement", id: announcement.id, title: announcement.title, approvalStatus: announcement.approvalStatus, updatedAt: announcement.updatedAt, reviewComment: announcement.reviewComment })}
+                              onClick={() =>
+                                openReview({
+                                  kind: "announcement",
+                                  id: announcement.id,
+                                  title: announcement.title,
+                                  approvalStatus: announcement.approvalStatus,
+                                  updatedAt: announcement.updatedAt,
+                                  reviewComment: announcement.reviewComment
+                                })
+                              }
                             >
                               レビュー
                             </Button>
-                          ) : null}
+                          )}
                         </>
-                      ) : announcement.approvalStatus !== "pending" ? (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => content.requestAnnouncementReview(announcement.id, role)}
-                        >
-                          承認申請
-                        </Button>
                       ) : (
-                        <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
+                        <>
+                          {announcement.approvalStatus === "pending" ? (
+                            <Badge className="bg-accent-gold/10 text-accent-gold">承認待ち</Badge>
+                          ) : (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => content.requestAnnouncementReview(announcement.id, role)}
+                            >
+                              承認申請
+                            </Button>
+                          )}
+                        </>
                       )}
                       <Button
                         type="button"
